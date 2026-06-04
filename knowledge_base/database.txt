@@ -1,0 +1,69 @@
+[CHUNK_ID: database_topic_1]
+Subject: Database
+Topic: What is a Database?
+Keywords: database, storage, organise, data, table, records, search, beginner, data store, information, save, find
+Difficulty: Beginner
+
+Explanation: A database is a system that stores information so it can be organised and found easily. It is like a digital cabinet where data is kept in a structured way.
+
+Example: A table of students can store names, phone numbers, and course details in rows and columns.
+
+Common Mistake: Putting different types of data in the wrong fields, such as storing a phone number in a name column.
+
+Useful For: Helping students understand why information is stored in a database and why structure matters.
+
+[CHUNK_ID: database_topic_2]
+Subject: Database
+Topic: Tables and Rows
+Keywords: table, row, column, record, field, spreadsheet, data layout, database, table structure, row and column, data record
+Difficulty: Beginner
+
+Explanation: A table holds data in rows and columns. Each row is one record, and each column is one type of information.
+
+Example: A student table may have columns for name, class, and email with each row representing one student.
+
+Common Mistake: Repeating the same meaning in different columns, which makes the data hard to use.
+
+Useful For: Explaining how tables store many records and how rows and columns work.
+
+[CHUNK_ID: database_topic_3]
+Subject: Database
+Topic: Primary Key
+Keywords: primary key, unique, identifier, row id, record, database design, key field, index, unique id, student id
+Difficulty: Beginner
+
+Explanation: A primary key is a unique value that identifies each row in a table. It makes sure no two records are confused.
+
+Example: A student_id number such as 101 is used to identify a single student record.
+
+Common Mistake: Using a field that can repeat, like a common name, instead of something unique.
+
+Useful For: Teaching why each record needs a unique ID and how to avoid duplicate data.
+
+[CHUNK_ID: database_topic_4]
+Subject: Database
+Topic: SQL SELECT
+Keywords: sql, select, query, retrieve, data, table, statement, result, student names, get names, fetch, select query, database query
+Difficulty: Beginner
+
+Explanation: SELECT is a SQL command that retrieves data from a table. It lets the user choose which columns to view.
+
+Example: SELECT name FROM students; returns the names of all students in the students table.
+
+Common Mistake: Forgetting the table name or using the wrong column name in the query.
+
+Useful For: Introducing basic database queries for reading data and getting values from a table.
+
+[CHUNK_ID: database_topic_5]
+Subject: Database
+Topic: CRUD Operations
+Keywords: crud, create, read, update, delete, data operations, database actions, manage data, insert, remove, change, table data
+Difficulty: Beginner
+
+Explanation: CRUD stands for Create, Read, Update, and Delete. These are the four main actions used to manage data in a database.
+
+Example: INSERT adds a record, SELECT reads records, UPDATE changes a record, and DELETE removes a record.
+
+Common Mistake: Running DELETE without a condition first, which can remove more records than intended.
+
+Useful For: Showing the basic actions used to add, read, change, and remove data safely.

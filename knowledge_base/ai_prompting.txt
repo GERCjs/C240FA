@@ -1,0 +1,69 @@
+[CHUNK_ID: ai_prompting_topic_1]
+Subject: AI Prompting
+Topic: What is Prompting?
+Keywords: prompt, instruction, ai, clarity, task, input, request, beginner, what is prompting, explain ai, ai question
+Difficulty: Beginner
+
+Explanation: Prompting is the process of telling the AI what you want it to do. A clear prompt helps the AI understand the task and respond well.
+
+Example: "Explain HTML for a beginner student" tells the AI the topic, audience, and purpose.
+
+Common Mistake: Writing a short or vague prompt without enough details, which can lead to a weak answer.
+
+Useful For: Teaching students how to write clear AI requests for useful responses.
+
+[CHUNK_ID: ai_prompting_topic_2]
+Subject: AI Prompting
+Topic: Be Specific
+Keywords: specific, detail, prompt, ai response, instructions, examples, clarity, focus, more detail, better prompt, use detail, improve prompt
+Difficulty: Beginner
+
+Explanation: Adding details to a prompt helps the AI answer more accurately. A specific prompt reduces guesswork and improves the result.
+
+Example: "Give a simple example of a for loop in Python" is better than just saying "Explain loops."
+
+Common Mistake: Using broad language that does not describe the exact need, which can produce irrelevant output.
+
+Useful For: Teaching students how to ask for clearer AI answers with more detail.
+
+[CHUNK_ID: ai_prompting_topic_3]
+Subject: AI Prompting
+Topic: Use the Right Tone
+Keywords: tone, audience, simple language, friendly, formal, beginner, style, prompt, polytechnic, easy words, explain simply
+Difficulty: Beginner
+
+Explanation: The tone tells the AI how to speak, such as simple and friendly for students. This makes the answer easier to understand.
+
+Example: "Explain this topic in simple language for polytechnic students." gives the AI guidance on style.
+
+Common Mistake: Not mentioning the intended audience, causing the AI to use language that is too advanced.
+
+Useful For: Helping students request answers that match their learning level.
+
+[CHUNK_ID: ai_prompting_topic_4]
+Subject: AI Prompting
+Topic: Ask for Step-by-Step Help
+Keywords: step-by-step, process, guide, instructions, beginner, sequence, learning, breakdown, steps, how to, step by step
+Difficulty: Beginner
+
+Explanation: Asking for step-by-step help helps the student follow the idea in small stages. It is useful when learning a new process.
+
+Example: "Show me step-by-step how to write a Python print statement." gives clear structure.
+
+Common Mistake: Assuming the AI knows the right format without saying to break the answer into steps.
+
+Useful For: Teaching students to get procedural help in a simple format.
+
+[CHUNK_ID: ai_prompting_topic_5]
+Subject: AI Prompting
+Topic: Check the Answer
+Keywords: verify, review, accuracy, response, prompt, refine, ask again, learning, check answer, confirm, review answer
+Difficulty: Beginner
+
+Explanation: After the AI answers, students should check if the response matches the question and is clear. This helps avoid misunderstanding.
+
+Example: If the answer does not include a simple example, ask the AI to add one.
+
+Common Mistake: Accepting the first response without checking if it is useful or correct.
+
+Useful For: Encouraging students to think critically about AI outputs and improve their prompts.

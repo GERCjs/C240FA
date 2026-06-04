@@ -1,0 +1,69 @@
+[CHUNK_ID: programming_topic_1]
+Subject: Programming
+Topic: Python Basics
+Keywords: python, programming, syntax, indentation, beginner, print, print message, hello world, code, basics, homework, assignment, explain
+Difficulty: Beginner
+
+Explanation: Python is a programming language that uses simple words and indentation to structure code. It is designed to be easy to read and write, so beginners can focus on learning the logic rather than complex symbols.
+
+Example: A simple Python line is print("Hello, world!") and it shows the words on the screen.
+
+Common Mistake: Leaving out quotes around text, which causes the code to fail because Python thinks the words are variable names.
+
+Useful For: Introducing students to simple Python questions, basic code examples, and beginner homework topics.
+
+[CHUNK_ID: programming_topic_2]
+Subject: Programming
+Topic: Variables
+Keywords: variable, storage, value, assignment, python, name, data, beginner, store, save, text value, number value, variable name
+Difficulty: Beginner
+
+Explanation: A variable is a label that stores a value, such as text or a number. It helps the program remember information and use it later in the code.
+
+Example: name = "Alice" stores the text Alice in a variable called name.
+
+Common Mistake: Using a variable before giving it a value, which leads to an error because the computer does not know what it means.
+
+Useful For: Teaching how to keep and reuse information in a program, and how to store simple values.
+
+[CHUNK_ID: programming_topic_3]
+Subject: Programming
+Topic: Data Types
+Keywords: data type, string, integer, float, python, number, text, type error, text vs number, string, integer, convert
+Difficulty: Beginner
+
+Explanation: Data types tell the program what kind of information is being used, such as text or numbers. This helps the computer handle the value correctly.
+
+Example: age = 18 stores a number, while city = "Singapore" stores text.
+
+Common Mistake: Trying to add text and numbers together without converting them, for example using "Age: " + 18.
+
+Useful For: Helping students understand text and numbers, and how values are grouped in code.
+
+[CHUNK_ID: programming_topic_4]
+Subject: Programming
+Topic: If Statements
+Keywords: if statement, condition, comparison, boolean, python, control flow, decision, branch, pass, score, check, then, if else
+Difficulty: Beginner
+
+Explanation: An if statement checks whether a condition is true and then runs code only when that condition is met. This allows the program to make decisions.
+
+Example: if score >= 50: print("Pass") means the message is shown only when the score is 50 or more.
+
+Common Mistake: Forgetting the colon at the end of the condition or using the wrong indentation.
+
+Useful For: Teaching basic decision-making and showing results only when a condition is met.
+
+[CHUNK_ID: programming_topic_5]
+Subject: Programming
+Topic: Loops
+Keywords: loop, for loop, repeat, iteration, range, python, code block, count, repeat a line, repeat code, times, loop statement
+Difficulty: Beginner
+
+Explanation: A loop repeats a block of instructions multiple times. It is useful when the same action must happen again and again.
+
+Example: for i in range(3): print(i) prints 0, 1, and 2 on separate lines.
+
+Common Mistake: Creating a loop that never ends or forgetting to update the value controlling the loop.
+
+Useful For: Teaching repeated actions, counting, and running code many times.
