@@ -1,172 +1,260 @@
-AI Learning Assistant - RAG Backend
-Overview
+# AI Learning Assistant - RAG Backend & Web Application
 
-This project implements a Retrieval-Augmented Generation (RAG) system for an AI Learning Assistant.
+## Overview
 
-The system retrieves relevant learning materials from the local knowledge base and uses Gemini 2.5 Flash to generate student-friendly answers.
+This project implements a Retrieval-Augmented Generation (RAG) powered AI Learning Assistant.
+
+The system combines a Node.js/Express web application, MySQL database, and Python-based RAG backend to provide an interactive learning platform where students can register, log in, ask questions, and receive AI-generated answers based on a curated knowledge base.
+
+---
+
+## System Architecture
+
+User
+
+↓
+
+Express.js + EJS Frontend
+
+↓
+
+Axios API Request
+
+↓
+
+Flask API
+
+↓
 
 RAG Pipeline
-Student Question
-        AI Learning Assistant - RAG Backend
 
-        ## Overview
+↓
 
-        This project implements a Retrieval-Augmented Generation (RAG) system for an AI Learning Assistant.
+ChromaDB Vector Search
 
-        The system retrieves relevant learning materials from the local knowledge base and uses Gemini 2.5 Flash to generate student-friendly answers.
+↓
 
-        ## RAG Pipeline
+Gemini 2.5 Flash
 
-        Student Question
+↓
 
-                ↓
+AI Response
 
-        Chunking
+↓
 
-                ↓
+MySQL Chat History Storage
 
-        Embedding
+---
 
-                ↓
+## Technology Stack
 
-        ChromaDB Vector Search
+### Frontend
 
-                ↓
+* EJS
+* Bootstrap 5
+* CSS
 
-        Retrieve Relevant Knowledge
+### Backend
 
-                ↓
+* Node.js
+* Express.js
+* Express Session
+* Axios
 
-        Gemini 2.5 Flash
+### Database
 
-                ↓
+* MySQL
 
-        Generated Answer
+### AI & RAG
 
-        ## Project Structure
+* Python
+* Flask
+* ChromaDB
+* Sentence Transformers
+* Gemini 2.5 Flash
 
-        ```
-        rag/
-        ├── chunking.py
-        ├── embedding.py
-        ├── retrieval.py
-        ├── generator.py
-        └── rag_pipeline.py
+---
 
-        knowledge_base/
-        ├── ai_prompting.txt
-        ├── database.txt
-        ├── programming.txt
-        ├── retrieval_evaluation.md
-        └── retrieval_test_cases.md
-        ```
+## Project Structure
 
-        ## File Responsibilities
+```text
+project/
 
-        ### `chunking.py`
-        - Loads all knowledge base files
-        - Splits documents into chunks using [CHUNK_ID:]
-        - Prepares knowledge for embedding
+├── app.js
+├── .env
+├── package.json
+│
+├── config/
+│   └── db.js
+│
+├── controllers/
+│   ├── userController.js
+│   └── chatController.js
+│
+│
+├── models/
+│   └── userModel.js
+│
+├── views/
+│   ├── index.ejs
+│   ├── register.ejs
+│   ├── login.ejs
+│   └── chat.ejs
+│
+├── public/
+│   └── css/
+│
+└── rag/
+    ├── api.py
+    ├── chunking.py
+    ├── embedding.py
+    ├── retrieval.py
+    ├── generator.py
+    └── rag_pipeline.py
+```
 
-        ### `embedding.py`
-        - Uses SentenceTransformer
-        - Converts text chunks into vector embeddings
-        - Generates semantic representations for retrieval
+## Database Schema
 
-        ### `retrieval.py`
-        - Stores embeddings in ChromaDB
-        - Performs vector similarity search
-        - Retrieves the most relevant chunks
+### users
 
-        ### `generator.py`
-        - Connects to Gemini 2.5 Flash
-        - Uses retrieved context to generate answers
+| Column     | Description           |
+| ---------- | --------------------- |
+| id         | User ID               |
+| name       | User Name             |
+| email      | User Email            |
+| password   | Hashed Password       |
+| created_at | Account Creation Date |
 
-        ### `rag_pipeline.py`
-        - Main entry point
-        - Combines retrieval and generation into a complete RAG workflow
+### chat_sessions
 
-        ## Requirements
+| Column     | Description           |
+| ---------- | --------------------- |
+| id         | Session ID            |
+| user_id    | User ID               |
+| title      | Chat Title            |
+| created_at | Session Creation Date |
 
-        ### Python Version
+### chat_messages
 
-        Recommended:
+| Column     | Description       |
+| ---------- | ----------------- |
+| id         | Message ID        |
+| session_id | Session ID        |
+| sender     | User / Assistant  |
+| message    | Chat Content      |
+| created_at | Message Timestamp |
 
-        Python 3.12+
+---
 
-        Current development version:
+## Installation
 
-        Python 3.12.10
+### Clone Repository
 
-        ### Required Python Packages
+```bash
+git clone <repository-url>
+cd C240FA
+```
 
-        Install all dependencies:
+### Install Node.js Dependencies
 
-        ```
-        pip install sentence-transformers chromadb google-genai python-dotenv
-        ```
-
-        ### Gemini API Setup
-
-        Create a `.env` file in the project root:
-
-        ```
-        GEMINI_API_KEY=YOUR_API_KEY_HERE
-        ```
-
-        Get your API key from Google AI Studio. "https://aistudio.google.com/apikey" 
-
-        ## Running the System
-
-        Run:
-
-        ```
-        python rag/rag_pipeline.py
-        ```
-
-        ### Example:
-
-        Ask a question (or type exit):
-        What is a database?
-
-        The system will:
-
-        - Convert the question into embeddings
-        - Search ChromaDB for relevant chunks
-        - Retrieve the most relevant knowledge
-        - Send the context to Gemini
-        - Generate a student-friendly answer
-
-        ## Current Dependencies
-
-        | Package | Purpose |
-        |---|---|
-        | sentence-transformers | Generate embeddings |
-        | chromadb | Vector database |
-        | google-genai | Gemini API |
-        | python-dotenv | Load environment variables |
-
-        ## Current Status
-
-        ### Completed:
-
-        - Knowledge Base Loading
-        - Chunking
-        - Embedding Generation
-        - ChromaDB Vector Store
-        - Semantic Retrieval
-        - Gemini Integration
-        - End-to-End RAG Pipeline
-
-        ### Planned:
-
-        - Express/EJS Frontend Integration
-        - Chat History Storage
-        - User Authentication
-        - Retrieval Evaluation Dashboard
-
-        Node.js Dependencies
-
-Install the required packages:
-
+```bash
 npm install express ejs mysql2 bcrypt express-session dotenv axios
+```
+
+### Install Python Dependencies
+
+```bash
+pip install flask sentence-transformers chromadb google-genai python-dotenv
+```
+
+### Configure Environment Variables
+
+Create a `.env` file:
+
+```env
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY. "https://aistudio.google.com/apikey"
+
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=
+DB_NAME=c240_ai
+```
+
+
+## Running the Application
+
+### Start Flask RAG API
+
+```bash
+python rag/api.py
+```
+
+Expected:
+
+```text
+Running on http://127.0.0.1:5000
+```
+
+### Start Express Application
+
+```bash
+npm run dev
+```
+
+Expected:
+
+```text
+Server running on URL address: http://localhost:3000/
+```
+
+---
+
+## Features Completed
+
+### RAG Backend
+
+* Knowledge Base Loading
+* Document Chunking
+* Embedding Generation
+* ChromaDB Vector Database
+* Semantic Retrieval
+* Gemini Integration
+* End-to-End RAG Pipeline
+
+### Web Application
+
+* Express Setup
+* EJS Frontend
+* Landing Page
+* User Registration
+* Password Hashing with bcrypt
+* User Login
+* Session Management
+* Chat Interface
+* Sidebar Navigation
+* Flask API Integration
+* Axios Communication
+* Postman API Testing
+
+---
+
+## Features In Progress
+
+* New Chat Functionality
+* Chat Session Creation
+* Chat Message Storage
+* Dynamic Chat History
+* Search Chat History
+
+---
+
+## Planned Features
+
+* Knowledge Base Upload
+* Retrieval Evaluation Dashboard
+* User Profile Management
+* Conversation Analytics
+* Admin Dashboard
+
+```
+```

@@ -81,11 +81,25 @@
 
                     <div class="chat-messages">
 
-                        <div class="bot-message">
+                        <% if(question){ %>
 
-                            👋 Hello! How can I help you today?
+                            <div class="user-message">
 
-                        </div>
+                                <%= question %>
+
+                            </div>
+
+                        <% } %>
+
+                        <% if(answer){ %>
+
+                            <div class="bot-message">
+
+                                <pre><%= answer %></pre>
+
+                            </div>
+
+                        <% } %>
 
                     </div>
 

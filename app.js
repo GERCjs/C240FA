@@ -18,11 +18,8 @@ const session =
         "express-session"
     );
 
-    
-const userController =
-    require("./controllers/userController");
-
-    
+const userController = require("./controllers/userController");
+const chatController = require("./controllers/chatController");
 
 app.set("view engine", "ejs");
 
@@ -73,12 +70,12 @@ app.post(
 
 app.get(
     "/chat",
-    (req,res)=>{
-
-        res.render("chat");
-
-    }
+    chatController.showChat
 );
 
+app.post(
+    "/chat",
+    chatController.askQuestion
+);
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on URL address: http://localhost:${PORT}/`));
