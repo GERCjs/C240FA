@@ -1,11 +1,24 @@
 const express = require("express");
 
 const app = express();
+
+const path = require("path");
+
+app.use(
+    express.static(
+        path.join(
+            __dirname,
+            "public"
+        )
+    )
+);
+
 const session =
     require(
         "express-session"
     );
 
+    
 const userController =
     require("./controllers/userController");
 
@@ -56,6 +69,15 @@ app.get(
 app.post(
     "/login",
     userController.login
+);
+
+app.get(
+    "/chat",
+    (req,res)=>{
+
+        res.render("chat");
+
+    }
 );
 
 const PORT = process.env.PORT || 3000;
