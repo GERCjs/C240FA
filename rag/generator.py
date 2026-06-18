@@ -2,26 +2,45 @@ from dotenv import load_dotenv
 from google import genai
 
 load_dotenv()
-google_client = genai.Client()
 
-def generate(query: str, chunks: List[str]) -> str:
-    prompt = f"""你是一位知识助手，请根据用户的问题和下列片段生成准确的回答。
+client = genai.Client()
 
-用户问题: {query}
 
-相关片段:
-{"\n\n".join(chunks)}
+def generate_answer(
+    question: str,
+    retrieved_chunks: list[str]
+) -> str:
 
-请基于上述内容作答，不要编造信息。"""
+    context = "\n\n".join(retrieved_chunks)
 
-    print(f"{prompt}\n\n---\n")
+    prompt = f"""
+You are an educational learning assistant.
 
-    response = google_client.models.generate_content(
+Student Question:
+{question}
+
+Retrieved Knowledge:
+{context}
+
+Instructions:
+1. Answer based only on the retrieved knowledge.
+2. Keep explanations beginner-friendly.
+3. Give a simple example.
+4. Give one key takeaway.
+5. If information is missing, say so.
+
+Response Format:
+
+### Simple Explanation
+
+### Example
+
+### Key Takeaway
+"""
+
+    response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
     )
 
     return response.text
-
-answer = generate(query, reranked_chunks)
-print(answer)
