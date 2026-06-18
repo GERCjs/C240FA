@@ -169,4 +169,4 @@ Student Question
 
 Install the required packages:
 
-npm install express ejs mysql2 bcrypt express-session dotenv
+npm install express ejs mysql2 bcrypt express-session dotenv axios
