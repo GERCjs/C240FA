@@ -34,7 +34,7 @@ ChromaDB Vector Search
 
 ↓
 
-Gemini 2.5 Flash
+Ollama qwen 3:8b
 
 ↓
 
@@ -71,7 +71,7 @@ MySQL Chat History Storage
 * Flask
 * ChromaDB
 * Sentence Transformers
-* Gemini 2.5 Flash
+* Ollama qwen 3:8b
 
 ---
 
@@ -164,7 +164,7 @@ npm install express ejs mysql2 bcrypt express-session dotenv axios
 ### Install Python Dependencies
 
 ```bash
-pip install flask sentence-transformers chromadb google-genai python-dotenv
+pip install flask sentence-transformers chromadb requests python-dotenv
 ```
 
 ### Configure Environment Variables
@@ -172,7 +172,6 @@ pip install flask sentence-transformers chromadb google-genai python-dotenv
 Create a `.env` file:
 
 ```env
-GEMINI_API_KEY=YOUR_GEMINI_API_KEY. "https://aistudio.google.com/apikey"
 
 DB_HOST=localhost
 DB_USER=root
@@ -180,8 +179,35 @@ DB_PASSWORD=
 DB_NAME=c240_ai
 ```
 
+### Install Ollama
+
+Download Ollama:
+
+https://ollama.com/download
+
+Pull the Qwen3 model:
+
+```bash
+ollama pull qwen3:8b
+```
+
+Test the model:
+
+```bash
+ollama run qwen3:8b
+```
+
+Example:
+
+```text
+>>> What is a database?
+```
+
+
 
 ## Running the Application
+```Ensure Qwen3:8b has been installed:
+
 
 ### Start Flask RAG API
 
@@ -211,6 +237,7 @@ Server running on URL address: http://localhost:3000/
 
 ## Features Completed
 
+
 ### RAG Backend
 
 * Knowledge Base Loading
@@ -218,7 +245,8 @@ Server running on URL address: http://localhost:3000/
 * Embedding Generation
 * ChromaDB Vector Database
 * Semantic Retrieval
-* Gemini Integration
+* Ollama Integration
+* Qwen3:8b Local LLM Integration
 * End-to-End RAG Pipeline
 
 ### Web Application

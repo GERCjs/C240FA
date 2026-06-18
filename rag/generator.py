@@ -1,46 +1,33 @@
-from dotenv import load_dotenv
-from google import genai
-
-load_dotenv()
-
-client = genai.Client()
-
+import requests
 
 def generate_answer(
-    question: str,
-    retrieved_chunks: list[str]
-) -> str:
+    question,
+    retrieved_chunks
+):
 
-    context = "\n\n".join(retrieved_chunks)
-
-    prompt = f"""
-You are an educational learning assistant.
-
-Student Question:
-{question}
-
-Retrieved Knowledge:
-{context}
-
-Instructions:
-1. Answer based only on the retrieved knowledge.
-2. Keep explanations beginner-friendly.
-3. Give a simple example.
-4. Give one key takeaway.
-5. If information is missing, say so.
-
-Response Format:
-
-### Simple Explanation
-
-### Example
-
-### Key Takeaway
-"""
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
+    context = "\n".join(
+        retrieved_chunks
     )
 
-    return response.text
+    prompt = f"""
+You are a helpful learning assistant.
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+    response = requests.post(
+        "http://localhost:11434/api/generate",
+        json={
+            "model": "qwen3:8b",
+            "prompt": prompt,
+            "stream": False
+        }
+    )
+
+    return response.json()["response"]
