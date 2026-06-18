@@ -164,3 +164,9 @@ Student Question
         - Chat History Storage
         - User Authentication
         - Retrieval Evaluation Dashboard
+
+        Node.js Dependencies
+
+Install the required packages:
+
+npm install express ejs mysql2 bcrypt express-session dotenv
