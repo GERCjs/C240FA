@@ -84,4 +84,86 @@ exports.register = async (
         }
     );
 
+    
+
+};
+
+exports.showLogin = (
+        req,
+        res
+    ) => {
+
+        res.render(
+            "login"
+        );
+
+    };
+
+    exports.login = (
+    req,
+    res
+) => {
+
+    const {
+        email,
+        password
+    } = req.body;
+
+    User.findByEmail(
+        email,
+        async (
+            err,
+            results
+        ) => {
+
+            if (err) {
+
+                console.log(err);
+
+                return res.send(
+                    "Database Error"
+                );
+
+            }
+
+            if (
+                results.length === 0
+            ) {
+
+                return res.send(
+                    "User Not Found"
+                );
+
+            }
+
+            const user =
+                results[0];
+
+            const match =
+                await bcrypt.compare(
+                    password,
+                    user.password
+                );
+
+            if (!match) {
+
+                return res.send(
+                    "Incorrect Password"
+                );
+
+            }
+
+            req.session.userId =
+                user.id;
+
+            req.session.userName =
+                user.name;
+
+            res.redirect(
+                "/chat"
+            );
+
+        }
+    );
+
 };
