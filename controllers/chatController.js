@@ -58,7 +58,7 @@ exports.askQuestion = async (req, res) => {
         const response = await axios.post("http://127.0.0.1:5000/chat", {
             question: question,
             context: contextMessages
-        }, { timeout: 60000 });
+        }, { timeout: 100000 });
 
         const answer = response.data.answer;
         const sources = response.data.sources || [];

@@ -1,0 +1,6 @@
+Loading knowledge base...
+Loaded 20 chunks
+Generating embeddings...
+Vector store ready!
+ * Serving Flask app 'api'
+ * Debug mode: on
