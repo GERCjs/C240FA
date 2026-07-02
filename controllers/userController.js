@@ -1,169 +1,87 @@
 const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
+const { sanitizeInput, isValidEmail, isNonEmpty } = require("../middleware/validate");
 
-const User =
-require("../models/userModel");
-
-exports.showRegister = (
-    req,
-    res
-) => {
-
-    res.render("register");
-
+exports.showRegister = (req, res) => {
+    res.render("register", { error: null });
 };
 
-exports.register = async (
-    req,
-    res
-) => {
+exports.register = async (req, res) => {
+    const name = sanitizeInput(req.body.name);
+    const email = sanitizeInput(req.body.email);
+    const password = req.body.password;
 
-    const {
-        name,
-        email,
-        password
-    } = req.body;
+    // Validation
+    if (!isNonEmpty(name) || !isValidEmail(email) || !isNonEmpty(password)) {
+        return res.render("register", { error: "Please fill in all fields with valid data." });
+    }
 
-    User.findByEmail(
-        email,
-        async (
-            err,
-            results
-        ) => {
+    if (password.length < 6) {
+        return res.render("register", { error: "Password must be at least 6 characters." });
+    }
 
-            if (err) {
-
-                console.log(err);
-
-                return res.send(
-                    "Database Error"
-                );
-            }
-
-            if (
-                results.length > 0
-            ) {
-
-                return res.send(
-                    "Email already exists"
-                );
-            }
-
-            const hashedPassword =
-                await bcrypt.hash(
-                    password,
-                    10
-                );
-
-            User.createUser(
-                name,
-                email,
-                hashedPassword,
-                (
-                    err,
-                    result
-                ) => {
-
-                    if (err) {
-
-                        console.log(
-                            err
-                        );
-
-                        return res.send(
-                            "Registration Failed"
-                        );
-                    }
-
-                    res.redirect(
-                        "/login"
-                    );
-
-                }
-            );
-
+    User.findByEmail(email, async (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.render("register", { error: "Database error. Please try again." });
         }
-    );
 
-    
+        if (results.length > 0) {
+            return res.render("register", { error: "Email already exists." });
+        }
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        User.createUser(name, email, hashedPassword, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.render("register", { error: "Registration failed. Please try again." });
+            }
+            res.redirect("/login");
+        });
+    });
 };
 
-exports.showLogin = (
-        req,
-        res
-    ) => {
+exports.showLogin = (req, res) => {
+    res.render("login", { error: null });
+};
 
-        res.render(
-            "login"
-        );
+exports.login = (req, res) => {
+    const email = sanitizeInput(req.body.email);
+    const password = req.body.password;
 
-    };
+    if (!isValidEmail(email) || !isNonEmpty(password)) {
+        return res.render("login", { error: "Please enter a valid email and password." });
+    }
 
-    exports.login = (
-    req,
-    res
-) => {
-
-    const {
-        email,
-        password
-    } = req.body;
-
-    User.findByEmail(
-        email,
-        async (
-            err,
-            results
-        ) => {
-
-            if (err) {
-
-                console.log(err);
-
-                return res.send(
-                    "Database Error"
-                );
-
-            }
-
-            if (
-                results.length === 0
-            ) {
-
-                return res.send(
-                    "User Not Found"
-                );
-
-            }
-
-            const user =
-                results[0];
-
-            const match =
-                await bcrypt.compare(
-                    password,
-                    user.password
-                );
-
-            if (!match) {
-
-                return res.send(
-                    "Incorrect Password"
-                );
-
-            }
-
-            req.session.userId =
-                user.id;
-
-            req.session.userName =
-                user.name;
-
-            res.redirect(
-                "/chat"
-            );
-
+    User.findByEmail(email, async (err, results) => {
+        if (err) {
+            console.log(err);
+            return res.render("login", { error: "Database error. Please try again." });
         }
-    );
 
+        if (results.length === 0) {
+            return res.render("login", { error: "User not found." });
+        }
+
+        const user = results[0];
+        const match = await bcrypt.compare(password, user.password);
+
+        if (!match) {
+            return res.render("login", { error: "Incorrect password." });
+        }
+
+        req.session.userId = user.id;
+        req.session.userName = user.name;
+        req.session.userRole = user.role || "student";
+
+        res.redirect("/dashboard");
+    });
+};
+
+exports.logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) console.log(err);
+        res.redirect("/");
+    });
 };

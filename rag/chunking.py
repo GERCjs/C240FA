@@ -2,7 +2,9 @@ from typing import List
 import os
 import re
 
-KNOWLEDGE_BASE = "knowledge_base"
+# Resolve path relative to the project root (one level up from rag/)
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+KNOWLEDGE_BASE = os.path.join(_BASE_DIR, "knowledge_base")
 
 
 def load_documents() -> List[str]:

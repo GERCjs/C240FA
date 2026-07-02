@@ -1,0 +1,69 @@
+[CHUNK_ID: academic_faq_1]
+Subject: Academic FAQ
+Topic: GPA Calculation
+Keywords: gpa, grade point average, grades, calculation, academic, cumulative, semester, score, results, how to calculate gpa
+Difficulty: Beginner
+
+Explanation: GPA (Grade Point Average) is calculated by multiplying the grade points for each module by its credit units, summing them up, and dividing by the total credit units. A typical scale uses A=4.0, B+=3.5, B=3.0, C+=2.5, C=2.0, D+=1.5, D=1.0, F=0.
+
+Example: If you score B (3.0) in a 4-credit module and A (4.0) in a 3-credit module, your GPA = (3.0x4 + 4.0x3) / (4+3) = 24/7 = 3.43.
+
+Common Mistake: Forgetting to weight by credit units and just averaging the grade points directly.
+
+Useful For: Students who want to understand how their semester or cumulative GPA is calculated.
+
+[CHUNK_ID: academic_faq_2]
+Subject: Academic FAQ
+Topic: Attendance Policy
+Keywords: attendance, absent, absent from class, minimum attendance, warning, mc, medical certificate, absent policy, class attendance
+Difficulty: Beginner
+
+Explanation: Most polytechnics require a minimum of 80% attendance for each module. Students who fall below this threshold may be barred from exams or receive a fail grade. Valid absences with medical certificates or approved leave do not count against attendance.
+
+Example: If a module has 16 weeks of lessons and you miss more than 3 weeks without valid reasons, you may breach the 80% rule.
+
+Common Mistake: Assuming that submitting a medical certificate after the deadline will automatically be accepted.
+
+Useful For: Students asking about attendance requirements and consequences of missing classes.
+
+[CHUNK_ID: academic_faq_3]
+Subject: Academic FAQ
+Topic: Examination Rules
+Keywords: exam, examination, test, rules, regulations, cheating, academic dishonesty, exam hall, exam rules, exam policy
+Difficulty: Beginner
+
+Explanation: During examinations, students must follow strict rules: no mobile phones, no unauthorized materials, arrive at least 15 minutes early, and bring your student ID. Academic dishonesty such as copying or using unauthorized aids results in disciplinary action which may include failing the module.
+
+Example: Bringing a phone into the exam hall even if switched off may be considered a violation.
+
+Common Mistake: Not reading the specific instructions for each exam regarding allowed materials like formula sheets or calculators.
+
+Useful For: Students preparing for exams who need to understand exam regulations.
+
+[CHUNK_ID: academic_faq_4]
+Subject: Academic FAQ
+Topic: Academic Regulations
+Keywords: academic, regulations, rules, probation, dismissal, repeat, module, fail, academic standing, warning letter, retake
+Difficulty: Beginner
+
+Explanation: Students who fail to maintain a minimum GPA (typically 1.0-2.0 depending on the institution) may be placed on academic probation. Continued poor performance can lead to dismissal. Students can usually repeat failed modules, but there may be limits on how many times a module can be retaken.
+
+Example: A student with a cumulative GPA below 1.5 for two consecutive semesters may receive a warning letter and be placed on probation.
+
+Common Mistake: Not seeking help early when grades start to drop, which makes recovery harder.
+
+Useful For: Students who want to understand academic standing rules and what happens if they fail modules.
+
+[CHUNK_ID: academic_faq_5]
+Subject: Academic FAQ
+Topic: Polytechnic Policies
+Keywords: polytechnic, policy, student handbook, code of conduct, plagiarism, late submission, extension, deadline, academic integrity
+Difficulty: Beginner
+
+Explanation: Polytechnic policies cover academic integrity (no plagiarism), submission deadlines (late penalties apply), extension requests (must be submitted before deadline with valid reasons), and student conduct. Plagiarism includes copying from others or AI without attribution.
+
+Example: Submitting work that is substantially similar to another student or copied from the internet without citation is plagiarism.
+
+Common Mistake: Assuming that paraphrasing without citation is acceptable, or that using AI-generated content without declaration is allowed.
+
+Useful For: Students who need clarity on submission policies, plagiarism rules, and requesting extensions.

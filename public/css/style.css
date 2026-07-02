@@ -1,0 +1,159 @@
+/* =====================
+   GLOBAL STYLES
+===================== */
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* =====================
+   CARDS
+===================== */
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* =====================
+   FLASHCARDS
+===================== */
+
+.flashcard {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.flashcard:hover {
+    transform: scale(1.02);
+}
+
+/* =====================
+   BADGES
+===================== */
+
+.badge {
+    font-weight: 500;
+}
+
+/* =====================
+   LOADING STATES
+===================== */
+
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* =====================
+   EMPTY STATES
+===================== */
+
+.text-center.text-muted.py-5 h4 {
+    color: #888;
+}
+
+/* =====================
+   RESPONSIVE TABLES
+===================== */
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.2rem 0.4rem;
+    }
+}
+
+/* =====================
+   DARK MODE
+===================== */
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #1a1a2e !important;
+        color: #e0e0e0;
+    }
+
+    .bg-light {
+        background-color: #16213e !important;
+    }
+
+    .card {
+        background-color: #0f3460;
+        border-color: #1a1a2e;
+        color: #e0e0e0;
+    }
+
+    .card-header {
+        border-color: #1a1a2e;
+    }
+
+    .table {
+        color: #e0e0e0;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #1a4f7a;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #16213e;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #16213e;
+        border-color: #10a37f;
+        color: #e0e0e0;
+    }
+
+    .modal-content {
+        background-color: #0f3460;
+        color: #e0e0e0;
+    }
+
+    .alert-info {
+        background-color: #1a4f7a;
+        border-color: #1a4f7a;
+        color: #e0e0e0;
+    }
+
+    .list-group-item {
+        background-color: #0f3460;
+        border-color: #1a1a2e;
+        color: #e0e0e0;
+    }
+
+    a {
+        color: #64b5f6;
+    }
+
+    .text-muted {
+        color: #999 !important;
+    }
+}
