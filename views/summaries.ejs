@@ -8,47 +8,50 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    {% include 'partial/navbar.ejs' %}
+    <%- include('partial/navbar') %>
 
     <div class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Study Summaries</h2>
+            <h2>📋 Study Summaries</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateModal"
-                {% if documents is not defined or documents|length == 0 %}disabled{% endif %}>
+                <% if (typeof documents === 'undefined' || documents.length === 0) { %>disabled<% } %>>
                 + Generate Summary
             </button>
         </div>
 
-        {% if documents is not defined or documents|length == 0 %}
-            <div class="alert alert-info">Upload a document first before generating summaries.</div>
-        {% endif %}
+        <% if (typeof documents === 'undefined' || documents.length === 0) { %>
+            <div class="alert alert-info">
+                <a href="/documents">Upload a document</a> first to generate summaries.
+            </div>
+        <% } %>
 
-        {% if summaries is defined and summaries|length > 0 %}
+        <% if (typeof summaries !== 'undefined' && summaries.length > 0) { %>
             <div class="row g-3">
-                {% for s in summaries %}
-                    <div class="col-md-4">
+                <% summaries.forEach(s => { %>
+                    <div class="col-md-6">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5>{{ s.title }}</h5>
-                                <p class="text-muted">{{ s.document_name or 'Manual' }}</p>
-                                <p>{{ s.summary_text[:150] }}...</p>
+                                <h5><%= s.title %></h5>
+                                <p class="text-muted"><%= s.document_name || 'Manual' %></p>
+                                <p><%= s.summary_text.substring(0, 150) %>...</p>
                             </div>
                             <div class="card-footer">
-                                <a href="/summaries/{{ s.id }}" class="btn btn-sm btn-primary">View</a>
-                                <a href="/summaries/{{ s.id }}/export" class="btn btn-sm btn-outline-secondary">Export</a>
+                                <a href="/summaries/<%= s.id %>" class="btn btn-sm btn-primary">View</a>
+                                <a href="/summaries/<%= s.id %>/export" class="btn btn-sm btn-outline-secondary">Export</a>
                             </div>
                         </div>
                     </div>
-                {% endfor %}
+                <% }) %>
             </div>
-        {% else %}
+        <% } else { %>
             <div class="text-center text-muted py-5">
                 <h4>No summaries yet</h4>
-                <p>Generate revision notes from your uploaded documents.</p>
+                <p>Generate summaries from your uploaded documents.</p>
             </div>
-        {% endif %}
+        <% } %>
     </div>
 
+    <!-- Generate Modal -->
     <div class="modal fade" id="generateModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -59,13 +62,13 @@
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Document</label>
+                            <label class="form-label">Select Document</label>
                             <select name="document_id" class="form-select" required>
-                                {% if documents is defined %}
-                                    {% for d in documents %}
-                                        <option value="{{ d.id }}">{{ d.original_name }}</option>
-                                    {% endfor %}
-                                {% endif %}
+                                <% if (typeof documents !== 'undefined') { %>
+                                    <% documents.forEach(d => { %>
+                                        <option value="<%= d.id %>"><%= d.original_name %></option>
+                                    <% }) %>
+                                <% } %>
                             </select>
                         </div>
                     </div>
@@ -78,7 +81,7 @@
         </div>
     </div>
 
-    {% include 'partial/footer.ejs' %}
+    <%- include('partial/footer') %>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

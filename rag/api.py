@@ -1,36 +1,9 @@
-try:
-    from dotenv import load_dotenv
-except ImportError:  # pragma: no cover - optional convenience dependency
-    load_dotenv = None
-
-if load_dotenv:
-    load_dotenv()
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
-try:
-    from .chunking import load_documents
-    from .embedding import embed_chunk
-    from .retrieval import save_embeddings, retrieve
-    from .generator import (
-        generate_answer,
-        generate_flashcards,
-        generate_quiz,
-        generate_study_plan,
-        generate_summary,
-    )
-except ImportError:
-    from chunking import load_documents
-    from embedding import embed_chunk
-    from retrieval import save_embeddings, retrieve
-    from generator import (
-        generate_answer,
-        generate_flashcards,
-        generate_quiz,
-        generate_study_plan,
-        generate_summary,
-    )
+from chunking import load_documents
+from embedding import embed_chunk
+from retrieval import save_embeddings, retrieve
+from generator import generate_answer, generate_quiz, generate_summary, generate_flashcards, generate_study_plan
 
 app = Flask(__name__)
 CORS(app)
@@ -41,7 +14,7 @@ CORS(app)
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     question = data.get("question", "")
     context = data.get("context", "")
 
@@ -77,7 +50,7 @@ def chat():
 
 @app.route("/index-document", methods=["POST"])
 def index_document():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     content = data.get("content", "")
     filename = data.get("filename", "")
     document_id = data.get("document_id", 0)
@@ -104,7 +77,7 @@ def index_document():
 
 @app.route("/generate-quiz", methods=["POST"])
 def quiz():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     subject = data.get("subject", "")
     topic = data.get("topic", "")
     count = data.get("count", 5)
@@ -125,7 +98,7 @@ def quiz():
 
 @app.route("/generate-summary", methods=["POST"])
 def summary():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     content = data.get("content", "")
     title = data.get("title", "Document")
 
@@ -140,7 +113,7 @@ def summary():
 
 @app.route("/generate-flashcards", methods=["POST"])
 def flashcards():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     content = data.get("content", "")
     subject = data.get("subject", "General")
     topic = data.get("topic", "Study Notes")
@@ -163,7 +136,7 @@ def flashcards():
 
 @app.route("/generate-plan", methods=["POST"])
 def plan():
-    data = request.get_json(silent=True) or {}
+    data = request.json
     title = data.get("title", "")
     module = data.get("module", "")
     description = data.get("description", "")

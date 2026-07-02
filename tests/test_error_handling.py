@@ -7,10 +7,7 @@ import requests
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "rag"))
-
-from web.uploads import ALLOWED_EXTENSIONS
 
 
 class TestFlaskAPIErrorHandling:
@@ -101,7 +98,7 @@ class TestFlaskAPIErrorHandling:
 
 
 class TestGeneratorFallbacks:
-    """Tests for generator fallback behaviour when Gemini is unavailable"""
+    """Tests for generator fallback behaviour when Ollama is unavailable"""
 
     def test_fallback_quiz_returns_questions(self):
         """Fallback quiz generator should return valid questions"""
@@ -161,7 +158,8 @@ class TestFileUploadValidation:
 
 def is_allowed_extension(ext):
     """Check if file extension is allowed"""
-    return ext.lower() in ALLOWED_EXTENSIONS
+    allowed = [".pdf", ".txt", ".md", ".docx"]
+    return ext.lower() in allowed
 
 
 def is_valid_file_size(size_bytes):

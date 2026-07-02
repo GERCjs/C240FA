@@ -6,15 +6,7 @@ import pytest
 import sys
 import os
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-
-from web.validation import (
-    is_valid_date,
-    is_valid_email,
-    is_valid_priority,
-    sanitize_input,
-    sanitize_prompt,
-)
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "rag"))
 
 
 class TestInputSanitization:
@@ -119,3 +111,71 @@ class TestPriorityValidation:
         assert is_valid_priority("urgent") is False
 
 
+# =====================
+# Validation Helper Functions (Python equivalents)
+# =====================
+
+import re
+from datetime import datetime
+
+
+def sanitize_input(text):
+    """Remove HTML tags and dangerous patterns from input"""
+    if text is None:
+        return ""
+    if not isinstance(text, str):
+        return ""
+    text = text.strip()
+    text = re.sub(r"<[^>]*>", "", text)
+    text = re.sub(r"javascript:", "", text, flags=re.IGNORECASE)
+    return text
+
+
+def sanitize_prompt(text):
+    """Remove prompt injection patterns"""
+    if text is None:
+        return ""
+    if not isinstance(text, str):
+        return ""
+
+    blocked_patterns = [
+        r"ignore\s+(all\s+)?previous\s+instructions",
+        r"you\s+are\s+now",
+        r"disregard\s+(all\s+)?previous",
+        r"system\s*:\s*",
+        r"\[INST\]",
+        r"<<SYS>>",
+    ]
+
+    cleaned = text
+    for pattern in blocked_patterns:
+        cleaned = re.sub(pattern, "", cleaned, flags=re.IGNORECASE)
+
+    return cleaned.strip()
+
+
+def is_valid_email(email):
+    """Validate email format"""
+    if not email or not isinstance(email, str):
+        return False
+    pattern = r"^[^\s@]+@[^\s@]+\.[^\s@]+$"
+    return bool(re.match(pattern, email))
+
+
+def is_valid_date(date_str):
+    """Validate date string"""
+    if not date_str:
+        return False
+    formats = ["%Y-%m-%d", "%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S"]
+    for fmt in formats:
+        try:
+            datetime.strptime(date_str, fmt)
+            return True
+        except ValueError:
+            continue
+    return False
+
+
+def is_valid_priority(priority):
+    """Validate priority value"""
+    return priority in ["low", "medium", "high"]

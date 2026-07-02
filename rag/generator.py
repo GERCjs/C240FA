@@ -1,37 +1,22 @@
+import requests
 import json
-import os
 
 
-def call_gemini(prompt):
-    """Send a prompt to Gemini and return the response text."""
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        print("Gemini skipped: GEMINI_API_KEY is not set")
-        return None
-
+def call_ollama(prompt):
+    """Send a prompt to Ollama and return the response text"""
     try:
-<<<<<<< HEAD
         response = requests.post(
             "http://localhost:11434/api/generate",
             json={
-                "model": "qwen3:8b",
+                "model": "llama3.2:latest",
                 "prompt": prompt,
                 "stream": False
             },
             timeout=120
-=======
-        from google import genai
-
-        client = genai.Client(api_key=api_key)
-        model = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-        response = client.models.generate_content(
-            model=model,
-            contents=prompt,
->>>>>>> f686db150e7608710652bea8abd6c024b7ed97f6
         )
-        return getattr(response, "text", None)
+        return response.json()["response"]
     except Exception as e:
-        print(f"Gemini error: {e}")
+        print(f"Ollama error: {e}")
         return None
 
 
@@ -57,10 +42,10 @@ Student Question:
 
 Answer (be clear, structured, and helpful):"""
 
-    answer = call_gemini(prompt)
+    answer = call_ollama(prompt)
     if answer:
         return answer
-    return "I'm sorry, I couldn't generate a response. Please check the Gemini API configuration."
+    return "I'm sorry, I couldn't generate a response. Please make sure the AI service is running."
 
 
 def generate_quiz(subject, topic, count, quiz_type, retrieved_chunks):
@@ -96,7 +81,7 @@ For short_answer type, omit the "options" field and set correct_answer to the te
 
 Generate {count} questions now:"""
 
-    response = call_gemini(prompt)
+    response = call_ollama(prompt)
     if response:
         try:
             # Try to extract JSON from response
@@ -134,7 +119,7 @@ Return a JSON object with this format (no markdown):
   "key_points": ["Point 1", "Point 2", "Point 3"]
 }}"""
 
-    response = call_gemini(prompt)
+    response = call_ollama(prompt)
     if response:
         try:
             json_str = response
@@ -169,7 +154,7 @@ Return ONLY a valid JSON array (no markdown):
 
 Generate {count} flashcards now:"""
 
-    response = call_gemini(prompt)
+    response = call_ollama(prompt)
     if response:
         try:
             json_str = response
@@ -208,7 +193,7 @@ Day 2: [specific task]
 
 Study plan:"""
 
-    response = call_gemini(prompt)
+    response = call_ollama(prompt)
     if response:
         return response
 
