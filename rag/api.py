@@ -24,7 +24,7 @@ def chat():
     print("Question:", question)
 
     # Retrieve relevant chunks
-    retrieved_chunks = retrieve(question, top_k=3)
+    retrieved_chunks = retrieve(question, top_k=2)
     print("Retrieved:", len(retrieved_chunks))
 
     # Extract source names from chunks
@@ -192,4 +192,4 @@ save_embeddings(chunks, embeddings)
 print("Vector store ready!")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)

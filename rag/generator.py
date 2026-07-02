@@ -1,19 +1,37 @@
 import requests
 import json
+import os
+
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
+except ImportError:
+    pass
+
+
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 
 
 def call_ollama(prompt):
     """Send a prompt to Ollama and return the response text"""
     try:
         response = requests.post(
-            "http://localhost:11434/api/generate",
+            f"{OLLAMA_HOST}/api/generate",
             json={
-                "model": "llama3.2:latest",
+                "model": OLLAMA_MODEL,
                 "prompt": prompt,
-                "stream": False
+                "stream": False,
+                "keep_alive": "10m",
+                "options": {
+                    "num_predict": 150,
+                    "temperature": 0.3
+                }
             },
             timeout=120
         )
+        response.raise_for_status()
         return response.json()["response"]
     except Exception as e:
         print(f"Ollama error: {e}")
@@ -33,6 +51,7 @@ Use the following knowledge base content to answer the question.
 If the content does not contain the answer, say so honestly.
 Always cite which source you used when applicable.
 Keep explanations simple and beginner-friendly.
+Answer in 4 to 6 short sentences unless the student asks for more detail.
 {conversation}
 Knowledge Base Content:
 {chunk_context}
