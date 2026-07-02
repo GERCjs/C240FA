@@ -8,46 +8,45 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>🃏 Flashcards</h2>
+            <h2>Flashcards</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateModal">+ Generate Cards</button>
         </div>
 
-        <% if (typeof flashcards !== 'undefined' && flashcards.length > 0) { %>
+        {% if flashcards is defined and flashcards|length > 0 %}
             <div class="row g-3">
-                <% flashcards.forEach(card => { %>
+                {% for card in flashcards %}
                     <div class="col-md-4">
-                        <div class="card h-100 flashcard" onclick="this.classList.toggle('flipped')">
+                        <div class="card h-100 flashcard">
                             <div class="card-body text-center d-flex flex-column justify-content-center" style="min-height: 200px;">
                                 <div class="flashcard-front">
-                                    <small class="text-muted d-block mb-2"><%= card.subject %> - <%= card.topic %></small>
-                                    <p class="fw-bold"><%= card.front_text %></p>
+                                    <small class="text-muted d-block mb-2">{{ card.subject }} - {{ card.topic }}</small>
+                                    <p class="fw-bold">{{ card.front_text }}</p>
                                     <small class="text-muted">Click to reveal</small>
                                 </div>
                                 <div class="flashcard-back d-none">
-                                    <p><%= card.back_text %></p>
-                                    <small class="text-muted">Reviewed <%= card.times_reviewed %> time(s)</small>
-                                    <form action="/flashcards/<%= card.id %>/review" method="POST" class="mt-2" onclick="event.stopPropagation()">
-                                        <button class="btn btn-sm btn-success">✓ Mark Reviewed</button>
+                                    <p>{{ card.back_text }}</p>
+                                    <small class="text-muted">Reviewed {{ card.times_reviewed }} time(s)</small>
+                                    <form action="/flashcards/{{ card.id }}/review" method="POST" class="mt-2" onclick="event.stopPropagation()">
+                                        <button class="btn btn-sm btn-success">Mark Reviewed</button>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                <% }) %>
+                {% endfor %}
             </div>
-        <% } else { %>
+        {% else %}
             <div class="text-center text-muted py-5">
                 <h4>No flashcards yet</h4>
                 <p>Generate flashcards from your study topics or documents.</p>
             </div>
-        <% } %>
+        {% endif %}
     </div>
 
-    <!-- Generate Modal -->
     <div class="modal fade" id="generateModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -73,11 +72,11 @@
                             <label class="form-label">From Document (optional)</label>
                             <select name="document_id" class="form-select">
                                 <option value="">-- None --</option>
-                                <% if (typeof documents !== 'undefined') { %>
-                                    <% documents.forEach(d => { %>
-                                        <option value="<%= d.id %>"><%= d.original_name %></option>
-                                    <% }) %>
-                                <% } %>
+                                {% if documents is defined %}
+                                    {% for d in documents %}
+                                        <option value="{{ d.id }}">{{ d.original_name }}</option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                         </div>
                     </div>
@@ -90,10 +89,9 @@
         </div>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Flashcard flip
         document.querySelectorAll('.flashcard').forEach(card => {
             card.addEventListener('click', () => {
                 const front = card.querySelector('.flashcard-front');

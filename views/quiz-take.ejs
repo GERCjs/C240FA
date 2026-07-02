@@ -3,52 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= quiz.title %> - Study Buddy AI</title>
+    <title>{{ quiz.title }} - Study Buddy AI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
-        <h2><%= quiz.title %></h2>
-        <p class="text-muted"><%= quiz.question_count %> questions | <%= quiz.quiz_type.toUpperCase() %></p>
+        <h2>{{ quiz.title }}</h2>
+        <p class="text-muted">{{ quiz.question_count }} questions | {{ quiz.quiz_type|upper }}</p>
 
-        <form action="/quizzes/<%= quiz.id %>/submit" method="POST">
-            <% quiz.questions.forEach((q, index) => { %>
+        <form action="/quizzes/{{ quiz.id }}/submit" method="POST">
+            {% for q in quiz.questions %}
+                {% set q_index = loop.index0 %}
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5>Question <%= index + 1 %></h5>
-                        <p><%= q.question %></p>
+                        <h5>Question {{ loop.index }}</h5>
+                        <p>{{ q.question }}</p>
 
-                        <% if (q.type === 'mcq' && q.options) { %>
-                            <% q.options.forEach((opt, optIndex) => { %>
+                        {% if q.type == 'mcq' and q.options %}
+                            {% for opt in q.options %}
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio"
-                                        name="answers[q<%= index %>]"
-                                        value="<%= String.fromCharCode(65 + optIndex) %>"
-                                        id="q<%= index %>_<%= optIndex %>">
-                                    <label class="form-check-label" for="q<%= index %>_<%= optIndex %>">
-                                        <strong><%= String.fromCharCode(65 + optIndex) %>.</strong> <%= opt %>
+                                        name="answers[q{{ q_index }}]"
+                                        value="{{ choice_letter(loop.index0) }}"
+                                        id="q{{ q_index }}_{{ loop.index0 }}">
+                                    <label class="form-check-label" for="q{{ q_index }}_{{ loop.index0 }}">
+                                        <strong>{{ choice_letter(loop.index0) }}.</strong> {{ opt }}
                                     </label>
                                 </div>
-                            <% }) %>
-                        <% } else { %>
-                            <textarea name="answers[q<%= index %>]" class="form-control" rows="3"
+                            {% endfor %}
+                        {% else %}
+                            <textarea name="answers[q{{ q_index }}]" class="form-control" rows="3"
                                 placeholder="Type your answer here..."></textarea>
-                        <% } %>
+                        {% endif %}
                     </div>
                 </div>
-            <% }) %>
+            {% endfor %}
 
             <div class="d-flex justify-content-between">
-                <a href="/quizzes" class="btn btn-secondary">← Back to Quizzes</a>
+                <a href="/quizzes" class="btn btn-secondary">Back to Quizzes</a>
                 <button type="submit" class="btn btn-success btn-lg">Submit Quiz</button>
             </div>
         </form>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

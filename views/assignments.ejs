@@ -8,23 +8,22 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📅 Assignment Planner</h2>
+            <h2>Assignment Planner</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">+ New Assignment</button>
         </div>
 
-        <% if (typeof overdue !== 'undefined' && overdue.length > 0) { %>
+        {% if overdue is defined and overdue|length > 0 %}
             <div class="alert alert-danger">
-                <strong>⚠️ Overdue:</strong> You have <%= overdue.length %> overdue assignment(s)!
+                <strong>Overdue:</strong> You have {{ overdue|length }} overdue assignment(s)!
             </div>
-        <% } %>
+        {% endif %}
 
-        <!-- Upcoming -->
-        <h4 class="mt-4">📌 Upcoming</h4>
-        <% if (typeof upcoming !== 'undefined' && upcoming.length > 0) { %>
+        <h4 class="mt-4">Upcoming</h4>
+        {% if upcoming is defined and upcoming|length > 0 %}
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-dark">
@@ -38,101 +37,90 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% upcoming.forEach(a => { %>
+                        {% for a in upcoming %}
                             <tr>
-                                <td><strong><%= a.title %></strong></td>
-                                <td><%= a.module %></td>
-                                <td><%= new Date(a.deadline).toLocaleDateString() %></td>
+                                <td><strong>{{ a.title }}</strong></td>
+                                <td>{{ a.module }}</td>
+                                <td>{{ a.deadline|date }}</td>
+                                <td><span class="badge bg-{{ priority_badge(a.priority) }}">{{ a.priority }}</span></td>
+                                <td><span class="badge bg-{{ status_badge(a.status) }}">{{ a.status }}</span></td>
                                 <td>
-                                    <span class="badge bg-<%= a.priority === 'high' ? 'danger' : a.priority === 'medium' ? 'warning' : 'secondary' %>">
-                                        <%= a.priority %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-<%= a.status === 'in_progress' ? 'primary' : 'secondary' %>">
-                                        <%= a.status %>
-                                    </span>
-                                </td>
-                                <td>
-                                    <form action="/assignments/<%= a.id %>/update" method="POST" class="d-inline">
+                                    <form action="/assignments/{{ a.id }}/update" method="POST" class="d-inline">
                                         <input type="hidden" name="status" value="in_progress">
-                                        <button class="btn btn-sm btn-outline-primary" title="Start">▶️</button>
+                                        <button class="btn btn-sm btn-outline-primary" title="Start">Start</button>
                                     </form>
-                                    <form action="/assignments/<%= a.id %>/update" method="POST" class="d-inline">
+                                    <form action="/assignments/{{ a.id }}/update" method="POST" class="d-inline">
                                         <input type="hidden" name="status" value="completed">
-                                        <button class="btn btn-sm btn-outline-success" title="Complete">✅</button>
+                                        <button class="btn btn-sm btn-outline-success" title="Complete">Done</button>
                                     </form>
-                                    <form action="/assignments/<%= a.id %>/plan" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-info" title="Generate Study Plan">📋</button>
+                                    <form action="/assignments/{{ a.id }}/plan" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-info" title="Generate Study Plan">Plan</button>
                                     </form>
-                                    <form action="/assignments/<%= a.id %>/delete" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-danger" title="Delete">🗑️</button>
+                                    <form action="/assignments/{{ a.id }}/delete" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete">Delete</button>
                                     </form>
                                 </td>
                             </tr>
-                            <% if (a.study_plan) { %>
+                            {% if a.study_plan %}
                                 <tr>
                                     <td colspan="6">
                                         <div class="alert alert-info mb-0">
-                                            <strong>📋 Study Plan:</strong><br>
-                                            <pre class="mb-0" style="white-space: pre-wrap;"><%= a.study_plan %></pre>
+                                            <strong>Study Plan:</strong><br>
+                                            <pre class="mb-0" style="white-space: pre-wrap;">{{ a.study_plan }}</pre>
                                         </div>
                                     </td>
                                 </tr>
-                            <% } %>
-                        <% }) %>
+                            {% endif %}
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-        <% } else { %>
+        {% else %}
             <div class="text-center text-muted py-4">
                 <p>No upcoming assignments. Create one to get started!</p>
             </div>
-        <% } %>
+        {% endif %}
 
-        <!-- Overdue -->
-        <% if (typeof overdue !== 'undefined' && overdue.length > 0) { %>
-            <h4 class="mt-4 text-danger">⚠️ Overdue</h4>
+        {% if overdue is defined and overdue|length > 0 %}
+            <h4 class="mt-4 text-danger">Overdue</h4>
             <div class="table-responsive">
                 <table class="table table-hover table-danger">
                     <thead>
                         <tr><th>Title</th><th>Module</th><th>Deadline</th><th>Priority</th><th>Actions</th></tr>
                     </thead>
                     <tbody>
-                        <% overdue.forEach(a => { %>
+                        {% for a in overdue %}
                             <tr>
-                                <td><%= a.title %></td>
-                                <td><%= a.module %></td>
-                                <td><%= new Date(a.deadline).toLocaleDateString() %></td>
-                                <td><span class="badge bg-danger"><%= a.priority %></span></td>
+                                <td>{{ a.title }}</td>
+                                <td>{{ a.module }}</td>
+                                <td>{{ a.deadline|date }}</td>
+                                <td><span class="badge bg-danger">{{ a.priority }}</span></td>
                                 <td>
-                                    <form action="/assignments/<%= a.id %>/update" method="POST" class="d-inline">
+                                    <form action="/assignments/{{ a.id }}/update" method="POST" class="d-inline">
                                         <input type="hidden" name="status" value="completed">
                                         <button class="btn btn-sm btn-success">Mark Done</button>
                                     </form>
                                 </td>
                             </tr>
-                        <% }) %>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-        <% } %>
+        {% endif %}
 
-        <!-- Completed -->
-        <% if (typeof completed !== 'undefined' && completed.length > 0) { %>
-            <h4 class="mt-4 text-success">✅ Completed</h4>
+        {% if completed is defined and completed|length > 0 %}
+            <h4 class="mt-4 text-success">Completed</h4>
             <ul class="list-group">
-                <% completed.forEach(a => { %>
+                {% for a in completed %}
                     <li class="list-group-item d-flex justify-content-between">
-                        <span><s><%= a.title %></s> - <%= a.module %></span>
-                        <small class="text-muted"><%= new Date(a.deadline).toLocaleDateString() %></small>
+                        <span><s>{{ a.title }}</s> - {{ a.module }}</span>
+                        <small class="text-muted">{{ a.deadline|date }}</small>
                     </li>
-                <% }) %>
+                {% endfor %}
             </ul>
-        <% } %>
+        {% endif %}
     </div>
 
-    <!-- Add Assignment Modal -->
     <div class="modal fade" id="addModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -176,7 +164,7 @@
         </div>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

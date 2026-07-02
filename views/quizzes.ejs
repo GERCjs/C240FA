@@ -8,65 +8,60 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📝 Quiz Generator</h2>
+            <h2>Quiz Generator</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateModal">+ Generate Quiz</button>
         </div>
 
-        <!-- Recent Attempts -->
-        <% if (typeof attempts !== 'undefined' && attempts.length > 0) { %>
+        {% if attempts is defined and attempts|length > 0 %}
             <h5>Recent Scores</h5>
             <div class="row g-3 mb-4">
-                <% attempts.slice(0, 4).forEach(a => { %>
+                {% for a in attempts[:4] %}
                     <div class="col-md-3">
                         <div class="card">
                             <div class="card-body text-center">
-                                <h4 class="<%= a.percentage >= 70 ? 'text-success' : a.percentage >= 50 ? 'text-warning' : 'text-danger' %>">
-                                    <%= a.percentage %>%
-                                </h4>
-                                <small class="text-muted"><%= a.quiz_title %></small>
+                                <h4 class="text-{{ score_badge(a.percentage) }}">{{ a.percentage }}%</h4>
+                                <small class="text-muted">{{ a.quiz_title }}</small>
                             </div>
                         </div>
                     </div>
-                <% }) %>
+                {% endfor %}
             </div>
-        <% } %>
+        {% endif %}
 
-        <!-- Available Quizzes -->
         <h5>Your Quizzes</h5>
-        <% if (typeof quizzes !== 'undefined' && quizzes.length > 0) { %>
+        {% if quizzes is defined and quizzes|length > 0 %}
             <div class="row g-3">
-                <% quizzes.forEach(q => { %>
+                {% for q in quizzes %}
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h6><%= q.title %></h6>
+                                <h6>{{ q.title }}</h6>
                                 <p class="text-muted mb-1">
-                                    <span class="badge bg-secondary"><%= q.quiz_type.toUpperCase() %></span>
-                                    <span class="badge bg-info"><%= q.question_count %> questions</span>
+                                    <span class="badge bg-secondary">{{ q.quiz_type|upper }}</span>
+                                    <span class="badge bg-info">{{ q.question_count }} questions</span>
                                 </p>
-                                <small class="text-muted"><%= new Date(q.created_at).toLocaleDateString() %></small>
+                                <small class="text-muted">{{ q.created_at|date }}</small>
                             </div>
                             <div class="card-footer">
-                                <a href="/quizzes/<%= q.id %>" class="btn btn-sm btn-primary">Take Quiz</a>
-                                <a href="/quizzes/<%= q.id %>/results" class="btn btn-sm btn-outline-secondary">Results</a>
+                                <a href="/quizzes/{{ q.id }}" class="btn btn-sm btn-primary">Take Quiz</a>
+                                <a href="/quizzes/{{ q.id }}/results" class="btn btn-sm btn-outline-secondary">Results</a>
                             </div>
                         </div>
                     </div>
-                <% }) %>
+                {% endfor %}
             </div>
-        <% } else { %>
+        {% else %}
             <div class="text-center text-muted py-5">
                 <h4>No quizzes yet</h4>
                 <p>Generate your first quiz from your study topics!</p>
             </div>
-        <% } %>
+        {% endif %}
     </div>
 
-    <!-- Generate Quiz Modal -->
     <div class="modal fade" id="generateModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -110,7 +105,7 @@
         </div>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
