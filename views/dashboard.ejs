@@ -8,17 +8,16 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
-        <h2 class="mb-4">📊 Dashboard</h2>
+        <h2 class="mb-4">Dashboard</h2>
 
-        <!-- Stats Cards -->
         <div class="row g-3 mb-4">
             <div class="col-md-3">
                 <div class="card bg-primary text-white">
                     <div class="card-body text-center">
-                        <h3><%= progress.quizzes_taken %></h3>
+                        <h3>{{ progress.quizzes_taken }}</h3>
                         <p class="mb-0">Quizzes Taken</p>
                     </div>
                 </div>
@@ -26,7 +25,7 @@
             <div class="col-md-3">
                 <div class="card bg-success text-white">
                     <div class="card-body text-center">
-                        <h3><%= Math.round(progress.avg_quiz_score) %>%</h3>
+                        <h3>{{ progress.avg_quiz_score|round|int }}%</h3>
                         <p class="mb-0">Avg Quiz Score</p>
                     </div>
                 </div>
@@ -34,15 +33,15 @@
             <div class="col-md-3">
                 <div class="card bg-info text-white">
                     <div class="card-body text-center">
-                        <h3><%= documentCount %></h3>
+                        <h3>{{ documentCount }}</h3>
                         <p class="mb-0">Documents</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card <%= overdueCount > 0 ? 'bg-danger' : 'bg-secondary' %> text-white">
+                <div class="card {{ 'bg-danger' if overdueCount > 0 else 'bg-secondary' }} text-white">
                     <div class="card-body text-center">
-                        <h3><%= overdueCount %></h3>
+                        <h3>{{ overdueCount }}</h3>
                         <p class="mb-0">Overdue Tasks</p>
                     </div>
                 </div>
@@ -50,111 +49,103 @@
         </div>
 
         <div class="row g-4">
-            <!-- Upcoming Deadlines -->
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-warning text-dark">
-                        <h5 class="mb-0">📅 Upcoming Deadlines</h5>
+                        <h5 class="mb-0">Upcoming Deadlines</h5>
                     </div>
                     <div class="card-body">
-                        <% if (deadlines.length === 0) { %>
+                        {% if deadlines|length == 0 %}
                             <div class="text-center text-muted py-3">
                                 <p>No upcoming deadlines</p>
                                 <a href="/assignments" class="btn btn-sm btn-outline-primary">Create Assignment</a>
                             </div>
-                        <% } else { %>
+                        {% else %}
                             <ul class="list-group list-group-flush">
-                                <% deadlines.forEach(d => { %>
+                                {% for d in deadlines %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
-                                            <strong><%= d.title %></strong>
-                                            <br><small class="text-muted"><%= d.module %></small>
+                                            <strong>{{ d.title }}</strong>
+                                            <br><small class="text-muted">{{ d.module }}</small>
                                         </div>
-                                        <span class="badge bg-<%= d.priority === 'high' ? 'danger' : d.priority === 'medium' ? 'warning' : 'secondary' %>">
-                                            <%= new Date(d.deadline).toLocaleDateString() %>
-                                        </span>
+                                        <span class="badge bg-{{ priority_badge(d.priority) }}">{{ d.deadline|date }}</span>
                                     </li>
-                                <% }) %>
+                                {% endfor %}
                             </ul>
-                        <% } %>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Recent Chats -->
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">💬 Recent Chats</h5>
+                        <h5 class="mb-0">Recent Chats</h5>
                     </div>
                     <div class="card-body">
-                        <% if (recentChats.length === 0) { %>
+                        {% if recentChats|length == 0 %}
                             <div class="text-center text-muted py-3">
                                 <p>No chat history yet</p>
                                 <a href="/chat" class="btn btn-sm btn-outline-primary">Start Chatting</a>
                             </div>
-                        <% } else { %>
+                        {% else %}
                             <ul class="list-group list-group-flush">
-                                <% recentChats.forEach(c => { %>
+                                {% for c in recentChats %}
                                     <li class="list-group-item">
-                                        <a href="/chat/session/<%= c.id %>" class="text-decoration-none">
-                                            <%= c.title %>
-                                        </a>
-                                        <br><small class="text-muted"><%= new Date(c.created_at).toLocaleString() %></small>
+                                        <a href="/chat/session/{{ c.id }}" class="text-decoration-none">{{ c.title }}</a>
+                                        <br><small class="text-muted">{{ c.created_at|datetime }}</small>
                                     </li>
-                                <% }) %>
+                                {% endfor %}
                             </ul>
-                        <% } %>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Quiz Performance -->
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">📝 Quiz Performance</h5>
+                        <h5 class="mb-0">Quiz Performance</h5>
                     </div>
                     <div class="card-body">
-                        <% if (quizPerformance.length === 0) { %>
+                        {% if quizPerformance|length == 0 %}
                             <div class="text-center text-muted py-3">
                                 <p>No quiz attempts yet</p>
                                 <a href="/quizzes" class="btn btn-sm btn-outline-success">Take a Quiz</a>
                             </div>
-                        <% } else { %>
+                        {% else %}
                             <ul class="list-group list-group-flush">
-                                <% quizPerformance.forEach(q => { %>
+                                {% for q in quizPerformance %}
                                     <li class="list-group-item d-flex justify-content-between">
-                                        <span><%= q.quiz_title %></span>
-                                        <span class="badge bg-<%= q.percentage >= 70 ? 'success' : q.percentage >= 50 ? 'warning' : 'danger' %>">
-                                            <%= q.score %>/<%= q.total %> (<%= q.percentage %>%)
+                                        <span>{{ q.quiz_title }}</span>
+                                        <span class="badge bg-{{ score_badge(q.percentage) }}">
+                                            {{ q.score }}/{{ q.total }} ({{ q.percentage }}%)
                                         </span>
                                     </li>
-                                <% }) %>
+                                {% endfor %}
                             </ul>
-                        <% } %>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Study Progress -->
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-header bg-info text-white">
-                        <h5 class="mb-0">📈 Study Progress</h5>
+                        <h5 class="mb-0">Study Progress</h5>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col-4">
-                                <h4><%= progress.cards_reviewed %></h4>
+                                <h4>{{ progress.cards_reviewed }}</h4>
                                 <small class="text-muted">Cards Reviewed</small>
                             </div>
                             <div class="col-4">
-                                <h4><%= progress.summaries_created %></h4>
+                                <h4>{{ progress.summaries_created }}</h4>
                                 <small class="text-muted">Summaries</small>
                             </div>
                             <div class="col-4">
-                                <h4><%= documentCount %></h4>
+                                <h4>{{ documentCount }}</h4>
                                 <small class="text-muted">Documents</small>
                             </div>
                         </div>
@@ -164,7 +155,7 @@
         </div>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

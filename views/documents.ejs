@@ -8,22 +8,22 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
-    <%- include('partial/navbar') %>
+    {% include 'partial/navbar.ejs' %}
 
     <div class="container py-4 flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>📄 Documents</h2>
+            <h2>Documents</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">+ Upload Document</button>
         </div>
 
-        <% if (typeof error !== 'undefined' && error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-        <% } %>
-        <% if (typeof success !== 'undefined' && success) { %>
-            <div class="alert alert-success"><%= success %></div>
-        <% } %>
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+            <div class="alert alert-success">{{ success }}</div>
+        {% endif %}
 
-        <% if (typeof documents !== 'undefined' && documents.length > 0) { %>
+        {% if documents is defined and documents|length > 0 %}
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-dark">
@@ -37,38 +37,37 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% documents.forEach(d => { %>
+                        {% for d in documents %}
                             <tr>
-                                <td><%= d.original_name %></td>
-                                <td><span class="badge bg-secondary"><%= d.file_type %></span></td>
-                                <td><%= (d.file_size / 1024).toFixed(1) %> KB</td>
+                                <td>{{ d.original_name }}</td>
+                                <td><span class="badge bg-secondary">{{ d.file_type }}</span></td>
+                                <td>{{ d.file_size|kb }} KB</td>
                                 <td>
-                                    <% if (d.indexed) { %>
-                                        <span class="badge bg-success">✓ Indexed</span>
-                                    <% } else { %>
+                                    {% if d.indexed %}
+                                        <span class="badge bg-success">Indexed</span>
+                                    {% else %}
                                         <span class="badge bg-warning">Pending</span>
-                                    <% } %>
+                                    {% endif %}
                                 </td>
-                                <td><%= new Date(d.created_at).toLocaleDateString() %></td>
+                                <td>{{ d.created_at|date }}</td>
                                 <td>
-                                    <form action="/documents/<%= d.id %>/delete" method="POST" class="d-inline">
-                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this document?')">🗑️</button>
+                                    <form action="/documents/{{ d.id }}/delete" method="POST" class="d-inline">
+                                        <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this document?')">Delete</button>
                                     </form>
                                 </td>
                             </tr>
-                        <% }) %>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
-        <% } else { %>
+        {% else %}
             <div class="text-center text-muted py-5">
                 <h4>No documents uploaded yet</h4>
                 <p>Upload PDF, TXT, or MD files to enhance AI responses.</p>
             </div>
-        <% } %>
+        {% endif %}
     </div>
 
-    <!-- Upload Modal -->
     <div class="modal fade" id="uploadModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,7 +92,7 @@
         </div>
     </div>
 
-    <%- include('partial/footer') %>
+    {% include 'partial/footer.ejs' %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,3 +1,5 @@
+import hashlib
+
 import chromadb
 
 from chunking import load_documents
@@ -17,11 +19,12 @@ def save_embeddings(chunks, embeddings):
     for i, (chunk, embedding) in enumerate(
         zip(chunks, embeddings)
     ):
+        chunk_id = hashlib.sha256(chunk.encode("utf-8")).hexdigest()
 
-        collection.add(
+        collection.upsert(
             documents=[chunk],
             embeddings=[embedding],
-            ids=[str(i)]
+            ids=[chunk_id]
         )
 
 
