@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from chunking import load_documents
 from embedding import embed_chunk
-from retrieval import save_embeddings, retrieve
+from retrieval import save_embeddings, retrieve, retrieve_ranked
 from generator import generate_answer, generate_quiz, generate_summary, generate_flashcards, generate_study_plan
 
 app = Flask(__name__)
@@ -24,7 +24,7 @@ def chat():
     print("Question:", question)
 
     # Retrieve relevant chunks
-    retrieved_chunks = retrieve(question, top_k=2)
+    retrieved_chunks = retrieve_ranked(question, top_k=2)
     print("Retrieved:", len(retrieved_chunks))
 
     # Extract source names from chunks

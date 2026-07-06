@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "rag"))
 try:
     from chunking import load_documents
     from embedding import embed_chunk
-    from retrieval import save_embeddings, retrieve
+    from retrieval import save_embeddings, retrieve, retrieve_ranked
     HAS_RAG_DEPS = True
 except ImportError:
     HAS_RAG_DEPS = False
@@ -139,6 +139,41 @@ class TestRetrieval:
         results = retrieve("Explain loops in Python", top_k=3)
         for result in results:
             assert len(result.strip()) > 0
+
+
+class TestRankedRetrieval:
+    """Tests for chat-specific hybrid reranking"""
+
+    @pytest.fixture(autouse=True)
+    def setup_vector_store(self):
+        """Load and index knowledge base before tests"""
+        chunks = load_documents()
+        embeddings = [embed_chunk(chunk) for chunk in chunks]
+        save_embeddings(chunks, embeddings)
+
+    def test_retrieve_ranked_returns_requested_count_or_less(self):
+        """Ranked retrieval should return at most top_k chunks"""
+        results = retrieve_ranked("What is Python?", top_k=2)
+        assert isinstance(results, list)
+        assert len(results) <= 2
+
+    def test_retrieve_ranked_python_print_first(self):
+        """Python print question should rank Python Basics first"""
+        results = retrieve_ranked("What is Python and how do I print a message?", top_k=3)
+        assert results
+        assert "programming_topic_1" in results[0]
+
+    def test_retrieve_ranked_sql_student_names_first(self):
+        """SQL table question should rank SQL SELECT first"""
+        results = retrieve_ranked("How do I get student names from a table?", top_k=3)
+        assert results
+        assert "database_topic_4" in results[0]
+
+    def test_retrieve_ranked_gpa_first(self):
+        """GPA question should rank GPA Calculation first"""
+        results = retrieve_ranked("How is GPA calculated?", top_k=3)
+        assert results
+        assert "academic_faq_1" in results[0]
 
 
 class TestRetrievalAccuracy:
