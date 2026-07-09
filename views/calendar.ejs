@@ -35,11 +35,17 @@
 
         .calendar-container {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 24px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Fix drag mirror positioning */
+        .fc-event-mirror {
+            position: fixed !important;
+            z-index: 9999 !important;
         }
 
         /* Search input decoration */
@@ -420,6 +426,226 @@
             background: rgba(99, 102, 241, 0.2);
             transform: translateY(-1px);
         }
+
+        /* Study Analytics Styles */
+        .analytics-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-1px);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        .stat-comparison {
+            font-size: 0.72rem;
+            margin-top: 4px;
+        }
+
+        .stat-comparison.up { color: #22c55e; }
+        .stat-comparison.down { color: #ef4444; }
+        .stat-comparison.same { color: rgba(255, 255, 255, 0.4); }
+
+        /* Heatmap */
+        .heatmap-row {
+            display: flex;
+            gap: 4px;
+            margin-top: 10px;
+        }
+
+        .heatmap-cell {
+            flex: 1;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.2s ease;
+            cursor: default;
+            position: relative;
+        }
+
+        .heatmap-cell .day-label {
+            font-size: 0.6rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .heatmap-cell.level-1 { background: rgba(99, 102, 241, 0.15); }
+        .heatmap-cell.level-2 { background: rgba(99, 102, 241, 0.3); }
+        .heatmap-cell.level-3 { background: rgba(99, 102, 241, 0.5); }
+        .heatmap-cell.level-4 { background: rgba(99, 102, 241, 0.7); color: #fff; }
+
+        /* Pomodoro Timer Styles */
+        .pomodoro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .pomodoro-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .pomodoro-card {
+            background: #18181c;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            text-align: center;
+            width: 380px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .pomodoro-timer-ring {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pomodoro-timer-ring svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .pomodoro-timer-ring .timer-text {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .pomodoro-timer-ring .timer-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            z-index: 1;
+        }
+
+        .pomodoro-session-title {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 20px;
+        }
+
+        .pomodoro-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .pomodoro-btn {
+            padding: 10px 24px;
+            border-radius: 20px;
+            border: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pomodoro-btn.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: #fff;
+        }
+
+        .pomodoro-btn.primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .pomodoro-btn.secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .pomodoro-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .pomodoro-btn.danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .pomodoro-btn.danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        .pomodoro-phase {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .phase-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .phase-dot.completed { background: #22c55e; }
+        .phase-dot.active { background: #6366f1; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+        .phase-dot.break { background: #f59e0b; }
+
+        /* Drag feedback */
+        .fc-event.fc-event-dragging {
+            opacity: 0.7;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4) !important;
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100 text-white page-container">
@@ -482,6 +708,44 @@
                         </div>
 
                         <button class="btn btn-sm btn-outline-light w-100 py-2 border-opacity-25" id="btnAddCalendar" style="border-radius: 10px; font-size: 0.85rem;"><i class="fa-solid fa-plus me-1"></i> Add Calendar</button>
+                    </div>
+
+                    <!-- Study Analytics Panel -->
+                    <div class="analytics-panel">
+                        <h6 class="mb-3 text-white small text-uppercase tracking-wider opacity-75">
+                            <i class="fa-solid fa-chart-simple me-1" style="color: #6366f1;"></i>This Week
+                        </h6>
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statHours">-</div>
+                                    <div class="stat-label">Hours Studied</div>
+                                    <div class="stat-comparison same" id="statComparison">-</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statSessions">-</div>
+                                    <div class="stat-label">Sessions</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statPomodoros">-</div>
+                                    <div class="stat-label">Pomodoros</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="stat-card">
+                                    <div class="stat-value" id="statFocus">-</div>
+                                    <div class="stat-label">Focus Mins</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="small text-white-50 mb-1" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px;">Last 7 Days Activity</div>
+                        <div class="heatmap-row" id="heatmapRow">
+                            <!-- Filled dynamically -->
+                        </div>
                     </div>
 
                     <!-- External Sync settings in accordion drawer -->
@@ -652,12 +916,45 @@
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4">
                         <button type="button" class="btn px-4 py-2" style="background: rgba(255, 255, 255, 0.05); color: #fff; border-radius: 20px; font-size: 0.85rem;" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="startPomodoroBtn" class="btn px-4 py-2 d-none" style="background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; border-radius: 20px; font-size: 0.85rem;"><i class="fa-solid fa-play me-1"></i>Start Studying</button>
                         <button type="button" id="deleteSessionBtn" class="btn btn-danger px-4 py-2 d-none" style="border-radius: 20px; font-size: 0.85rem;">Delete Session</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Pomodoro Timer Overlay -->
+    <div class="pomodoro-overlay" id="pomodoroOverlay">
+        <div class="pomodoro-card">
+            <h5 class="text-white mb-1" style="font-weight: 700;"><i class="fa-solid fa-fire me-2" style="color: #ef4444;"></i>Focus Mode</h5>
+            <div class="pomodoro-session-title" id="pomodoroTitle">Study Session</div>
+            
+            <div class="pomodoro-phase" id="pomodoroPhases">
+                <!-- Phase dots populated by JS -->
+            </div>
+
+            <div class="pomodoro-timer-ring">
+                <svg width="200" height="200">
+                    <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="6"/>
+                    <circle id="pomodoroProgress" cx="100" cy="100" r="90" fill="none" stroke="#6366f1" stroke-width="6" stroke-linecap="round" stroke-dasharray="565.48" stroke-dashoffset="0"/>
+                </svg>
+                <div class="d-flex flex-column align-items-center">
+                    <div class="timer-text" id="pomodoroTime">25:00</div>
+                    <div class="timer-label" id="pomodoroPhaseLabel">Focus</div>
+                </div>
+            </div>
+
+            <div class="pomodoro-controls">
+                <button class="pomodoro-btn secondary" id="pomodoroReset" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
+                <button class="pomodoro-btn primary" id="pomodoroStartPause"><i class="fa-solid fa-play me-1"></i>Start</button>
+                <button class="pomodoro-btn danger" id="pomodoroStop" title="End Session"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="mt-3 small text-white-50" id="pomodoroStats">0 pomodoros completed</div>
+        </div>
+    </div>
+
 
     <!-- Floating AI Calendar Assistant Widget -->
     <button class="ai-chat-toggle" id="aiChatToggle" title="Open AI Study Assistant">
@@ -727,7 +1024,9 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                editable: false,
+                editable: true,
+                eventStartEditable: true,
+                eventDurationEditable: true,
                 selectable: true,
                 events: function(fetchInfo, successCallback, failureCallback) {
                     if (cachedEvents.length > 0) {
@@ -767,7 +1066,9 @@
                     
                     var html = '';
                     var deleteBtn = document.getElementById('deleteSessionBtn');
+                    var pomodoroBtn = document.getElementById('startPomodoroBtn');
                     deleteBtn.className = 'btn btn-danger px-4 py-2 d-none'; // default hide
+                    pomodoroBtn.className = 'btn px-4 py-2 d-none'; // default hide
                     
                     if (props.type === 'assignment') {
                         html = `
@@ -799,12 +1100,18 @@
                                 .then(data => {
                                     if (data.success) {
                                         info.event.remove();
-                                        // Clear cache so it fetches fresh on next load
                                         cachedEvents = cachedEvents.filter(e => e.id !== `session-${props.dbId}`);
                                         viewModal.hide();
                                     }
                                 });
                             }
+                        };
+                        // Show Start Studying (Pomodoro) button
+                        pomodoroBtn.className = 'btn px-4 py-2 d-block';
+                        pomodoroBtn.style = 'background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: #fff; border: none; border-radius: 20px; font-size: 0.85rem;';
+                        pomodoroBtn.onclick = function() {
+                            viewModal.hide();
+                            startPomodoro(props.dbId, title.replace('📖 Study: ', ''));
                         };
                     }
                     
@@ -818,6 +1125,68 @@
                     selectedDate = activeDate;
                     miniCalDate = new Date(activeDate);
                     renderMiniCalendar();
+                },
+
+                // Only allow dragging study sessions, not assignment deadlines
+                eventAllow: function(dropInfo, draggedEvent) {
+                    return draggedEvent.extendedProps && draggedEvent.extendedProps.type === 'session';
+                },
+
+                // Handle drag & drop reschedule
+                eventDrop: function(info) {
+                    var props = info.event.extendedProps;
+                    if (props.type !== 'session') {
+                        info.revert();
+                        return;
+                    }
+                    
+                    var newStart = info.event.start.toISOString().slice(0, 19);
+                    var newEnd = (info.event.end || info.event.start).toISOString().slice(0, 19);
+                    
+                    fetch(`/calendar/sessions/${props.dbId}/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ start_time: newStart, end_time: newEnd })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            info.revert();
+                            alert('Failed to reschedule session');
+                        } else {
+                            // Update cached events
+                            cachedEvents = [];
+                        }
+                    })
+                    .catch(() => info.revert());
+                },
+
+                // Handle resize (duration change)
+                eventResize: function(info) {
+                    var props = info.event.extendedProps;
+                    if (props.type !== 'session') {
+                        info.revert();
+                        return;
+                    }
+                    
+                    var newStart = info.event.start.toISOString().slice(0, 19);
+                    var newEnd = info.event.end.toISOString().slice(0, 19);
+                    
+                    fetch(`/calendar/sessions/${props.dbId}/update`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ start_time: newStart, end_time: newEnd })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success) {
+                            info.revert();
+                            alert('Failed to update session duration');
+                        } else {
+                            cachedEvents = [];
+                        }
+                    })
+                    .catch(() => info.revert());
                 }
             });
             
@@ -1118,6 +1487,274 @@
                     appendMessage('assistant', 'Connection error. Please make sure both servers are running.');
                 });
             }
+
+            // ============================================
+            // POMODORO TIMER LOGIC
+            // ============================================
+            const FOCUS_DURATION = 25 * 60; // 25 minutes in seconds
+            const BREAK_DURATION = 5 * 60;  // 5 minutes in seconds
+            const TOTAL_POMODOROS = 4;
+            const CIRCUMFERENCE = 2 * Math.PI * 90; // ~565.48
+
+            let pomodoroState = {
+                isRunning: false,
+                isPaused: false,
+                isBreak: false,
+                timeRemaining: FOCUS_DURATION,
+                totalTime: FOCUS_DURATION,
+                currentPomodoro: 0,
+                completedPomodoros: 0,
+                sessionId: null,
+                sessionTitle: '',
+                interval: null,
+                totalFocusSeconds: 0
+            };
+
+            function startPomodoro(sessionId, title) {
+                pomodoroState.sessionId = sessionId;
+                pomodoroState.sessionTitle = title;
+                pomodoroState.currentPomodoro = 0;
+                pomodoroState.completedPomodoros = 0;
+                pomodoroState.isBreak = false;
+                pomodoroState.isRunning = false;
+                pomodoroState.isPaused = false;
+                pomodoroState.timeRemaining = FOCUS_DURATION;
+                pomodoroState.totalTime = FOCUS_DURATION;
+                pomodoroState.totalFocusSeconds = 0;
+
+                document.getElementById('pomodoroTitle').innerText = title;
+                document.getElementById('pomodoroOverlay').classList.add('active');
+                
+                updatePomodoroDisplay();
+                renderPomodoroPhases();
+            }
+
+            function updatePomodoroDisplay() {
+                const mins = Math.floor(pomodoroState.timeRemaining / 60);
+                const secs = pomodoroState.timeRemaining % 60;
+                document.getElementById('pomodoroTime').innerText = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                // Update progress ring
+                const progress = 1 - (pomodoroState.timeRemaining / pomodoroState.totalTime);
+                const offset = CIRCUMFERENCE * (1 - progress);
+                const progressEl = document.getElementById('pomodoroProgress');
+                progressEl.style.strokeDashoffset = offset;
+                progressEl.style.stroke = pomodoroState.isBreak ? '#f59e0b' : '#6366f1';
+
+                // Update phase label
+                document.getElementById('pomodoroPhaseLabel').innerText = 
+                    pomodoroState.isBreak ? 'Break Time' : 'Focus';
+
+                // Update stats
+                document.getElementById('pomodoroStats').innerText = 
+                    `${pomodoroState.completedPomodoros} pomodoro${pomodoroState.completedPomodoros !== 1 ? 's' : ''} completed`;
+            }
+
+            function renderPomodoroPhases() {
+                const container = document.getElementById('pomodoroPhases');
+                container.innerHTML = '';
+                for (let i = 0; i < TOTAL_POMODOROS; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'phase-dot';
+                    if (i < pomodoroState.completedPomodoros) {
+                        dot.classList.add('completed');
+                    } else if (i === pomodoroState.currentPomodoro) {
+                        dot.classList.add(pomodoroState.isBreak ? 'break' : 'active');
+                    }
+                    container.appendChild(dot);
+                }
+            }
+
+            function pomodoroTick() {
+                if (pomodoroState.timeRemaining <= 0) {
+                    // Phase completed
+                    if (!pomodoroState.isBreak) {
+                        // Focus phase done
+                        pomodoroState.completedPomodoros++;
+                        pomodoroState.totalFocusSeconds += FOCUS_DURATION;
+                        
+                        // Play notification sound
+                        try { new Audio('data:audio/wav;base64,UklGRl9vT19teleUFZRSBmbXQgAAAAEAAQABAAAAAAAAAAAAEAEABkYXRhQQBAAA==').play(); } catch(e) {}
+                        
+                        if (pomodoroState.completedPomodoros >= TOTAL_POMODOROS) {
+                            // All pomodoros done!
+                            endPomodoroSession(true);
+                            return;
+                        }
+                        
+                        // Start break
+                        pomodoroState.isBreak = true;
+                        pomodoroState.timeRemaining = BREAK_DURATION;
+                        pomodoroState.totalTime = BREAK_DURATION;
+                    } else {
+                        // Break done, start next focus
+                        pomodoroState.isBreak = false;
+                        pomodoroState.currentPomodoro++;
+                        pomodoroState.timeRemaining = FOCUS_DURATION;
+                        pomodoroState.totalTime = FOCUS_DURATION;
+                    }
+                    renderPomodoroPhases();
+                } else {
+                    pomodoroState.timeRemaining--;
+                    if (!pomodoroState.isBreak) {
+                        pomodoroState.totalFocusSeconds++;
+                    }
+                }
+                updatePomodoroDisplay();
+            }
+
+            function endPomodoroSession(completed) {
+                clearInterval(pomodoroState.interval);
+                pomodoroState.isRunning = false;
+                pomodoroState.isPaused = false;
+                
+                const focusMinutes = Math.round(pomodoroState.totalFocusSeconds / 60);
+                
+                if (focusMinutes > 0) {
+                    // Log to database
+                    fetch('/calendar/pomodoro', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: pomodoroState.sessionId,
+                            focus_minutes: focusMinutes
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Refresh analytics & calendar
+                            loadStudyAnalytics();
+                            cachedEvents = [];
+                            calendar.refetchEvents();
+                        }
+                    });
+                }
+                
+                document.getElementById('pomodoroOverlay').classList.remove('active');
+                
+                if (completed) {
+                    alert(`Great job! You completed ${pomodoroState.completedPomodoros} pomodoros (${focusMinutes} minutes of focus)!`);
+                }
+                
+                // Reset button state
+                const btn = document.getElementById('pomodoroStartPause');
+                btn.innerHTML = '<i class="fa-solid fa-play me-1"></i>Start';
+            }
+
+            // Pomodoro button handlers
+            document.getElementById('pomodoroStartPause').addEventListener('click', function() {
+                if (!pomodoroState.isRunning) {
+                    // Start
+                    pomodoroState.isRunning = true;
+                    pomodoroState.isPaused = false;
+                    pomodoroState.interval = setInterval(pomodoroTick, 1000);
+                    this.innerHTML = '<i class="fa-solid fa-pause me-1"></i>Pause';
+                } else if (!pomodoroState.isPaused) {
+                    // Pause
+                    pomodoroState.isPaused = true;
+                    clearInterval(pomodoroState.interval);
+                    this.innerHTML = '<i class="fa-solid fa-play me-1"></i>Resume';
+                } else {
+                    // Resume
+                    pomodoroState.isPaused = false;
+                    pomodoroState.interval = setInterval(pomodoroTick, 1000);
+                    this.innerHTML = '<i class="fa-solid fa-pause me-1"></i>Pause';
+                }
+            });
+
+            document.getElementById('pomodoroReset').addEventListener('click', function() {
+                clearInterval(pomodoroState.interval);
+                pomodoroState.isRunning = false;
+                pomodoroState.isPaused = false;
+                pomodoroState.timeRemaining = pomodoroState.isBreak ? BREAK_DURATION : FOCUS_DURATION;
+                pomodoroState.totalTime = pomodoroState.timeRemaining;
+                updatePomodoroDisplay();
+                document.getElementById('pomodoroStartPause').innerHTML = '<i class="fa-solid fa-play me-1"></i>Start';
+            });
+
+            document.getElementById('pomodoroStop').addEventListener('click', function() {
+                if (confirm('End this study session? Your progress will be saved.')) {
+                    endPomodoroSession(false);
+                }
+            });
+
+            // ============================================
+            // STUDY ANALYTICS LOADER
+            // ============================================
+            function loadStudyAnalytics() {
+                fetch('/calendar/analytics')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.error) return;
+                        
+                        // Update stat cards
+                        document.getElementById('statHours').innerText = data.thisWeek.totalHours;
+                        document.getElementById('statSessions').innerText = data.thisWeek.sessions;
+                        document.getElementById('statPomodoros').innerText = data.pomodoro.count;
+                        document.getElementById('statFocus').innerText = data.pomodoro.focusMinutes;
+                        
+                        // Update comparison
+                        const compEl = document.getElementById('statComparison');
+                        if (data.comparison.direction === 'up') {
+                            compEl.className = 'stat-comparison up';
+                            compEl.innerHTML = `<i class="fa-solid fa-arrow-up me-1"></i>${data.comparison.diffHours}h more`;
+                        } else if (data.comparison.direction === 'down') {
+                            compEl.className = 'stat-comparison down';
+                            compEl.innerHTML = `<i class="fa-solid fa-arrow-down me-1"></i>${data.comparison.diffHours}h less`;
+                        } else {
+                            compEl.className = 'stat-comparison same';
+                            compEl.innerHTML = 'Same as last week';
+                        }
+                        
+                        // Render heatmap
+                        renderHeatmap(data.dailyBreakdown);
+                    })
+                    .catch(err => console.error('Analytics load failed:', err));
+            }
+
+            function renderHeatmap(dailyData) {
+                const container = document.getElementById('heatmapRow');
+                container.innerHTML = '';
+                
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const today = new Date();
+                
+                // Create cells for the last 7 days
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().slice(0, 10);
+                    
+                    // Find matching data
+                    const dayData = dailyData.find(d => {
+                        const dStr = new Date(d.study_date).toISOString().slice(0, 10);
+                        return dStr === dateStr;
+                    });
+                    
+                    const minutes = dayData ? dayData.minutes : 0;
+                    
+                    // Determine intensity level
+                    let level = '';
+                    if (minutes > 0 && minutes <= 30) level = 'level-1';
+                    else if (minutes > 30 && minutes <= 60) level = 'level-2';
+                    else if (minutes > 60 && minutes <= 120) level = 'level-3';
+                    else if (minutes > 120) level = 'level-4';
+                    
+                    const cell = document.createElement('div');
+                    cell.className = `heatmap-cell ${level}`;
+                    cell.innerHTML = `
+                        <span class="day-label">${dayNames[date.getDay()]}</span>
+                        <span>${minutes > 0 ? minutes + 'm' : '-'}</span>
+                    `;
+                    cell.title = `${dateStr}: ${minutes} minutes`;
+                    container.appendChild(cell);
+                }
+            }
+
+            // Load analytics on page load
+            loadStudyAnalytics();
         });
     </script>
 </body>

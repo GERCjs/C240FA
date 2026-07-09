@@ -4,17 +4,15 @@ import os
 try:
     from dotenv import load_dotenv
     from openai import OpenAI
-    from dotenv import load_dotenv
-
     load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
-except ImportError:
-    pass
-
-
-client = OpenAI(
-    api_key=os.getenv("OPENROUTER_API_KEY"),
-    base_url=os.getenv("OPENROUTER_BASE_URL")
-)
+    
+    client = OpenAI(
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+        base_url=os.getenv("OPENROUTER_BASE_URL")
+    )
+except ImportError as e:
+    print(f"Error importing dependencies: {e}")
+    client = None
 
 MODEL = os.getenv(
     "OPENROUTER_MODEL",

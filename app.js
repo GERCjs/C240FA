@@ -109,8 +109,11 @@ app.post("/flashcards/:id/delete", requireAuth, summaryController.deleteFlashcar
 // Calendar & Sync
 app.get("/calendar", requireAuth, calendarController.showCalendar);
 app.get("/calendar/events", requireAuth, calendarController.getEvents);
+app.get("/calendar/analytics", requireAuth, calendarController.getStudyAnalytics);
 app.post("/calendar/sessions", requireAuth, calendarController.createStudySession);
+app.post("/calendar/sessions/:id/update", requireAuth, calendarController.updateStudySession);
 app.post("/calendar/sessions/:id/delete", requireAuth, calendarController.deleteStudySession);
+app.post("/calendar/pomodoro", requireAuth, calendarController.logPomodoroSession);
 app.post("/calendar/ai", requireAuth, calendarController.handleCalendarAI);
 app.get("/auth/google", requireAuth, calendarController.authGoogle);
 app.get("/auth/google/callback", requireAuth, calendarController.authGoogleCallback);
