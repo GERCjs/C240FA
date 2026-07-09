@@ -6,46 +6,97 @@
     <title>Quiz Results - Study Buddy AI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            font-size: 2.5rem;
+            font-weight: bold;
+        }
+        .score-high { background: #d4edda; color: #155724; border: 4px solid #28a745; }
+        .score-mid { background: #fff3cd; color: #856404; border: 4px solid #ffc107; }
+        .score-low { background: #f8d7da; color: #721c24; border: 4px solid #dc3545; }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
     <%- include('partial/navbar') %>
 
     <div class="container py-4 flex-grow-1">
+        <!-- Score Summary -->
         <div class="text-center mb-4">
             <h2>Quiz Results</h2>
-            <div class="display-1 <%= percentage >= 70 ? 'text-success' : percentage >= 50 ? 'text-warning' : 'text-danger' %>">
+            <% if (typeof quiz !== 'undefined' && quiz.title) { %>
+                <p class="text-muted"><%= quiz.title %></p>
+            <% } %>
+
+            <div class="score-circle <%= percentage >= 70 ? 'score-high' : percentage >= 50 ? 'score-mid' : 'score-low' %> my-4">
                 <%= percentage %>%
             </div>
-            <p class="lead">You scored <%= score %> out of <%= total %></p>
+
+            <p class="lead">You scored <strong><%= score %></strong> out of <strong><%= total %></strong></p>
+
+            <% if (percentage >= 80) { %>
+                <div class="alert alert-success d-inline-block">🎉 Excellent! You've mastered this topic!</div>
+            <% } else if (percentage >= 60) { %>
+                <div class="alert alert-warning d-inline-block">👍 Good job! Review the incorrect answers below.</div>
+            <% } else { %>
+                <div class="alert alert-danger d-inline-block">📚 Keep studying! Review the explanations below.</div>
+            <% } %>
         </div>
 
         <!-- Detailed Results -->
+        <h5 class="mb-3">📋 Answer Review</h5>
         <% graded.forEach((g, index) => { %>
             <div class="card mb-3 border-<%= g.is_correct ? 'success' : 'danger' %>">
+                <div class="card-header d-flex justify-content-between align-items-center bg-<%= g.is_correct ? 'success' : 'danger' %> bg-opacity-10">
+                    <span><strong>Question <%= index + 1 %></strong></span>
+                    <span class="badge bg-<%= g.is_correct ? 'success' : 'danger' %>">
+                        <%= g.is_correct ? '✓ Correct' : '✗ Incorrect' %>
+                    </span>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <h6>Question <%= index + 1 %></h6>
-                        <span class="badge bg-<%= g.is_correct ? 'success' : 'danger' %>">
-                            <%= g.is_correct ? '✓ Correct' : '✗ Incorrect' %>
-                        </span>
-                    </div>
-                    <p><%= g.question %></p>
-                    <p><strong>Your answer:</strong> <%= g.user_answer || '(No answer)' %></p>
-                    <% if (!g.is_correct) { %>
-                        <p class="text-success"><strong>Correct answer:</strong> <%= g.correct_answer %></p>
+                    <p class="fw-semibold"><%= g.question %></p>
+
+                    <% if (g.options) { %>
+                        <div class="mb-2">
+                            <% g.options.forEach((opt, optIdx) => { %>
+                                <div class="<%= String.fromCharCode(65 + optIdx) === g.correct_answer ? 'text-success fw-bold' : String.fromCharCode(65 + optIdx) === g.user_answer ? 'text-danger' : '' %>">
+                                    <%= String.fromCharCode(65 + optIdx) %>. <%= opt %>
+                                    <% if (String.fromCharCode(65 + optIdx) === g.correct_answer) { %> ✓<% } %>
+                                    <% if (String.fromCharCode(65 + optIdx) === g.user_answer && !g.is_correct) { %> (your answer)<% } %>
+                                </div>
+                            <% }) %>
+                        </div>
+                    <% } else { %>
+                        <p><strong>Your answer:</strong> <%= g.user_answer || '<em>(No answer provided)</em>' %></p>
+                        <% if (!g.is_correct) { %>
+                            <p class="text-success"><strong>Expected answer:</strong> <%= g.correct_answer %></p>
+                        <% } %>
                     <% } %>
+
                     <% if (g.explanation) { %>
                         <div class="alert alert-info mt-2 mb-0">
-                            <strong>Explanation:</strong> <%= g.explanation %>
+                            <strong>💡 Explanation:</strong> <%= g.explanation %>
                         </div>
                     <% } %>
                 </div>
             </div>
         <% }) %>
 
-        <div class="d-flex justify-content-between mt-4">
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-between mt-4 mb-4">
             <a href="/quizzes" class="btn btn-secondary">← Back to Quizzes</a>
-            <a href="/quizzes/<%= typeof quiz !== 'undefined' ? quiz.id : '' %>" class="btn btn-primary">Retake Quiz</a>
+            <div>
+                <% if (typeof quiz !== 'undefined' && quiz.id) { %>
+                    <a href="/quizzes/<%= quiz.id %>/results" class="btn btn-outline-primary me-2">View History</a>
+                    <a href="/quizzes/<%= quiz.id %>" class="btn btn-primary">🔄 Retake Quiz</a>
+                <% } %>
+            </div>
         </div>
     </div>
 

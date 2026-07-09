@@ -1,0 +1,55 @@
+# ============================================
+# Study Buddy AI - Docker Compose
+# Runs n8n, ChromaDB, and Ollama together
+# The Express app and MySQL run on the host
+# ============================================
+
+version: '3.8'
+
+services:
+  # n8n Workflow Automation
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: studybuddy-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=studybuddy-admin
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Singapore
+      - N8N_API_KEY=study-buddy-n8n-key-change-me
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_MODEL=llama3.2:latest
+      - CHROMADB_HOST=http://chromadb:8000
+    volumes:
+      - n8n_data:/home/node/.n8n
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - chromadb
+
+  # ChromaDB Vector Database
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: studybuddy-chromadb
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=FALSE
+    volumes:
+      - chromadb_data:/chroma/chroma
+
+volumes:
+  n8n_data:
+    driver: local
+  chromadb_data:
+    driver: local
