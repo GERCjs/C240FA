@@ -7,7 +7,6 @@ exports.showDashboard = (req, res) => {
             (SELECT COUNT(*) FROM users) as total_users,
             (SELECT COUNT(*) FROM chat_sessions) as total_sessions,
             (SELECT COUNT(*) FROM chat_messages) as total_messages,
-            (SELECT COUNT(*) FROM documents) as total_documents,
             (SELECT COUNT(*) FROM quizzes) as total_quizzes,
             (SELECT COUNT(*) FROM quiz_attempts) as total_attempts,
             (SELECT COUNT(*) FROM assignments) as total_assignments
@@ -50,45 +49,6 @@ exports.deleteUser = (req, res) => {
     db.query(sql, [userId], (err) => {
         if (err) console.log(err);
         res.redirect("/admin/users");
-    });
-};
-
-exports.manageDocuments = (req, res) => {
-    const sql = `
-        SELECT d.*, u.name as uploader_name
-        FROM documents d
-        JOIN users u ON d.user_id = u.id
-        ORDER BY d.created_at DESC
-    `;
-
-    db.query(sql, (err, documents) => {
-        if (err) {
-            console.log(err);
-            documents = [];
-        }
-        res.render("admin/documents", { documents });
-    });
-};
-
-exports.deleteDocument = (req, res) => {
-    const docId = parseInt(req.params.id);
-    const fs = require("fs");
-    const path = require("path");
-
-    const getSql = "SELECT filename FROM documents WHERE id = ?";
-    db.query(getSql, [docId], (err, results) => {
-        if (results && results.length > 0) {
-            const filePath = path.join(__dirname, "..", "uploads", results[0].filename);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-        }
-
-        const deleteSql = "DELETE FROM documents WHERE id = ?";
-        db.query(deleteSql, [docId], (err) => {
-            if (err) console.log(err);
-            res.redirect("/admin/documents");
-        });
     });
 };
 

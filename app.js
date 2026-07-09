@@ -21,7 +21,6 @@ const n8nRoutes = require("./routes/n8nRoutes");
 
 // Middleware
 const { requireAuth, requireAdmin } = require("./middleware/auth");
-const upload = require("./middleware/upload");
 
 // View engine
 app.set("view engine", "ejs");
@@ -127,8 +126,6 @@ app.post("/calendar/disconnect/:provider", requireAuth, calendarController.disco
 app.get("/admin", requireAuth, requireAdmin, adminController.showDashboard);
 app.get("/admin/users", requireAuth, requireAdmin, adminController.manageUsers);
 app.post("/admin/users/:id/delete", requireAuth, requireAdmin, adminController.deleteUser);
-app.get("/admin/documents", requireAuth, requireAdmin, adminController.manageDocuments);
-app.post("/admin/documents/:id/delete", requireAuth, requireAdmin, adminController.deleteDocument);
 app.get("/admin/analytics", requireAuth, requireAdmin, adminController.viewAnalytics);
 
 // =====================
