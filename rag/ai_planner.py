@@ -1,6 +1,6 @@
 import json
 import datetime
-from generator import call_deepseek 
+from generator import call_deepseek
 
 def parse_calendar_query(query, current_time_str):
     """

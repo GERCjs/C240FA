@@ -112,7 +112,7 @@ exports.getEvents = (req, res) => {
 };
 
 // ============================================
-// CREATE & DELETE STUDY SESSIONS
+// CREATE, UPDATE & DELETE STUDY SESSIONS
 // ============================================
 
 exports.createStudySession = (req, res) => {
@@ -143,6 +143,29 @@ exports.createStudySession = (req, res) => {
     });
 };
 
+// Update study session times (drag & drop reschedule)
+exports.updateStudySession = (req, res) => {
+    const userId = req.session.userId;
+    const id = parseInt(req.params.id);
+    const { start_time, end_time } = req.body;
+    
+    if (!start_time || !end_time) {
+        return res.status(400).json({ error: "Missing required fields" });
+    }
+    
+    const sql = "UPDATE study_sessions SET start_time = ?, end_time = ? WHERE id = ? AND user_id = ?";
+    db.query(sql, [start_time, end_time, id, userId], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Session not found" });
+        }
+        res.json({ success: true });
+    });
+};
+
 exports.deleteStudySession = (req, res) => {
     const userId = req.session.userId;
     const id = parseInt(req.params.id);
@@ -153,6 +176,142 @@ exports.deleteStudySession = (req, res) => {
             console.log(err);
             return res.status(500).json({ error: "Database error" });
         }
+        res.json({ success: true });
+    });
+};
+
+// ============================================
+// STUDY ANALYTICS
+// ============================================
+
+exports.getStudyAnalytics = (req, res) => {
+    const userId = req.session.userId;
+    
+    // Get study hours this week
+    const weekStartSql = `
+        SELECT 
+            COALESCE(SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)), 0) AS total_minutes,
+            COUNT(*) AS total_sessions
+        FROM study_sessions 
+        WHERE user_id = ? 
+            AND start_time >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+            AND status IN ('scheduled', 'completed')
+    `;
+    
+    // Get study hours last week for comparison
+    const lastWeekSql = `
+        SELECT COALESCE(SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)), 0) AS total_minutes
+        FROM study_sessions 
+        WHERE user_id = ? 
+            AND start_time >= DATE_SUB(DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY), INTERVAL 7 DAY)
+            AND start_time < DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+            AND status IN ('scheduled', 'completed')
+    `;
+    
+    // Get completed sessions count
+    const completedSql = `
+        SELECT COUNT(*) AS completed FROM study_sessions 
+        WHERE user_id = ? AND status = 'completed'
+    `;
+    
+    // Get pomodoro stats
+    const pomodoroSql = `
+        SELECT 
+            COALESCE(SUM(focus_minutes), 0) AS total_focus_minutes,
+            COUNT(*) AS total_pomodoros
+        FROM pomodoro_logs 
+        WHERE user_id = ? 
+            AND completed_at >= DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY)
+    `;
+    
+    // Get daily breakdown for heatmap (last 7 days)
+    const dailySql = `
+        SELECT 
+            DATE(start_time) AS study_date,
+            COALESCE(SUM(TIMESTAMPDIFF(MINUTE, start_time, end_time)), 0) AS minutes
+        FROM study_sessions 
+        WHERE user_id = ? 
+            AND start_time >= DATE_SUB(CURDATE(), INTERVAL 6 DAY)
+            AND status IN ('scheduled', 'completed')
+        GROUP BY DATE(start_time)
+        ORDER BY study_date ASC
+    `;
+    
+    db.query(weekStartSql, [userId], (err, weekData) => {
+        if (err) { console.log(err); return res.json({ error: "Database error" }); }
+        
+        db.query(lastWeekSql, [userId], (err, lastWeekData) => {
+            if (err) { console.log(err); return res.json({ error: "Database error" }); }
+            
+            db.query(completedSql, [userId], (err, completedData) => {
+                if (err) { console.log(err); return res.json({ error: "Database error" }); }
+                
+                db.query(pomodoroSql, [userId], (err, pomodoroData) => {
+                    // If pomodoro_logs table doesn't exist yet, just return zeros
+                    const pomodoro = (err || !pomodoroData[0]) 
+                        ? { total_focus_minutes: 0, total_pomodoros: 0 } 
+                        : pomodoroData[0];
+                    
+                    db.query(dailySql, [userId], (err, dailyData) => {
+                        if (err) { console.log(err); return res.json({ error: "Database error" }); }
+                        
+                        const thisWeekMinutes = weekData[0].total_minutes;
+                        const lastWeekMinutes = lastWeekData[0].total_minutes;
+                        const diff = thisWeekMinutes - lastWeekMinutes;
+                        
+                        res.json({
+                            thisWeek: {
+                                totalMinutes: thisWeekMinutes,
+                                totalHours: (thisWeekMinutes / 60).toFixed(1),
+                                sessions: weekData[0].total_sessions
+                            },
+                            lastWeek: {
+                                totalMinutes: lastWeekMinutes
+                            },
+                            comparison: {
+                                diffMinutes: diff,
+                                diffHours: (Math.abs(diff) / 60).toFixed(1),
+                                direction: diff > 0 ? 'up' : diff < 0 ? 'down' : 'same'
+                            },
+                            completedSessions: completedData[0].completed,
+                            pomodoro: {
+                                focusMinutes: pomodoro.total_focus_minutes,
+                                count: pomodoro.total_pomodoros
+                            },
+                            dailyBreakdown: dailyData
+                        });
+                    });
+                });
+            });
+        });
+    });
+};
+
+// ============================================
+// POMODORO LOGGING
+// ============================================
+
+exports.logPomodoroSession = (req, res) => {
+    const userId = req.session.userId;
+    const { session_id, focus_minutes } = req.body;
+    
+    if (!focus_minutes) {
+        return res.status(400).json({ error: "Missing focus_minutes" });
+    }
+    
+    const sql = "INSERT INTO pomodoro_logs (user_id, session_id, focus_minutes) VALUES (?, ?, ?)";
+    db.query(sql, [userId, session_id || null, focus_minutes], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        
+        // If linked to a session, mark it as completed
+        if (session_id) {
+            const updateSql = "UPDATE study_sessions SET status = 'completed' WHERE id = ? AND user_id = ?";
+            db.query(updateSql, [session_id, userId]);
+        }
+        
         res.json({ success: true });
     });
 };

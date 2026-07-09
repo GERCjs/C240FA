@@ -139,3 +139,18 @@ CREATE TABLE IF NOT EXISTS user_calendar_configs (
     UNIQUE KEY user_provider (user_id, provider),
     CONSTRAINT user_calendar_configs_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- ============================================
+-- POMODORO LOGS TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS pomodoro_logs (
+    id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    session_id INT DEFAULT NULL,
+    focus_minutes INT NOT NULL DEFAULT 25,
+    completed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    KEY user_id (user_id),
+    KEY session_id (session_id),
+    CONSTRAINT pomodoro_logs_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT pomodoro_logs_ibfk_2 FOREIGN KEY (session_id) REFERENCES study_sessions (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
