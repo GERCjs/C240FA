@@ -1,8 +1,9 @@
-import requests
 import json
 import os
 
 try:
+    from dotenv import load_dotenv
+    from openai import OpenAI
     from dotenv import load_dotenv
 
     load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
@@ -10,31 +11,33 @@ except ImportError:
     pass
 
 
-OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+client = OpenAI(
+    api_key=os.getenv("OPENROUTER_API_KEY"),
+    base_url=os.getenv("OPENROUTER_BASE_URL")
+)
+
+MODEL = os.getenv(
+    "OPENROUTER_MODEL",
+    "deepseek/deepseek-v4-flash"
+)
 
 
-def call_ollama(prompt):
-    """Send a prompt to Ollama and return the response text"""
+def call_deepseek(prompt):
     try:
-        response = requests.post(
-            f"{OLLAMA_HOST}/api/generate",
-            json={
-                "model": OLLAMA_MODEL,
-                "prompt": prompt,
-                "stream": False,
-                "keep_alive": "10m",
-                "options": {
-                    "num_predict": 150,
-                    "temperature": 0.3
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
                 }
-            },
-            timeout=120
+            ],
+            temperature=0.3,
+            max_tokens=500
         )
-        response.raise_for_status()
-        return response.json()["response"]
+        return response.choices[0].message.content
     except Exception as e:
-        print(f"Ollama error: {e}")
+        print(f"OpenRouter Error: {e}")
         return None
 
 
@@ -61,7 +64,7 @@ Student Question:
 
 Answer (be clear, structured, and helpful):"""
 
-    answer = call_ollama(prompt)
+    answer = call_deepseek(prompt)
     if answer:
         return answer
     return "I'm sorry, I couldn't generate a response. Please make sure the AI service is running."
@@ -100,7 +103,7 @@ For short_answer type, omit the "options" field and set correct_answer to the te
 
 Generate {count} questions now:"""
 
-    response = call_ollama(prompt)
+    response = call_deepseek(prompt)
     if response:
         try:
             # Try to extract JSON from response
@@ -138,7 +141,7 @@ Return a JSON object with this format (no markdown):
   "key_points": ["Point 1", "Point 2", "Point 3"]
 }}"""
 
-    response = call_ollama(prompt)
+    response = call_deepseek(prompt)
     if response:
         try:
             json_str = response
@@ -173,7 +176,7 @@ Return ONLY a valid JSON array (no markdown):
 
 Generate {count} flashcards now:"""
 
-    response = call_ollama(prompt)
+    response = call_deepseek(prompt)
     if response:
         try:
             json_str = response
@@ -212,7 +215,7 @@ Day 2: [specific task]
 
 Study plan:"""
 
-    response = call_ollama(prompt)
+    response = call_deepseek(prompt)
     if response:
         return response
 
