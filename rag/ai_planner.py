@@ -1,6 +1,6 @@
 import json
 import datetime
-from generator import call_ollama
+from generator import call_deepseek 
 
 def parse_calendar_query(query, current_time_str):
     """
@@ -42,7 +42,7 @@ User Query:
 
 Response JSON:"""
 
-    response = call_ollama(prompt)
+    response = call_deepseek(prompt)
     if response:
         try:
             # Clean response markup if any
