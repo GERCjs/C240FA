@@ -30,25 +30,6 @@ CREATE TABLE IF NOT EXISTS assignments (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ============================================
--- DOCUMENTS TABLE
--- ============================================
-CREATE TABLE IF NOT EXISTS documents (
-    id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    filename VARCHAR(255) NOT NULL,
-    original_name VARCHAR(255) NOT NULL,
-    file_type VARCHAR(50) NOT NULL,
-    file_size INT NOT NULL,
-    content TEXT,
-    chunk_count INT DEFAULT 0,
-    indexed TINYINT(1) NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY user_id (user_id),
-    CONSTRAINT documents_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- ============================================
 -- QUIZZES TABLE
 -- ============================================
 CREATE TABLE IF NOT EXISTS quizzes (
@@ -91,7 +72,6 @@ CREATE TABLE IF NOT EXISTS quiz_attempts (
 CREATE TABLE IF NOT EXISTS flashcards (
     id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
-    document_id INT DEFAULT NULL,
     subject VARCHAR(100),
     topic VARCHAR(100),
     front_text TEXT NOT NULL,
@@ -102,9 +82,7 @@ CREATE TABLE IF NOT EXISTS flashcards (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     KEY user_id (user_id),
-    KEY document_id (document_id),
-    CONSTRAINT flashcards_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT flashcards_ibfk_2 FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE SET NULL
+    CONSTRAINT flashcards_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ============================================
@@ -123,24 +101,6 @@ CREATE TABLE IF NOT EXISTS reminders (
     KEY assignment_id (assignment_id),
     CONSTRAINT reminders_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT reminders_ibfk_2 FOREIGN KEY (assignment_id) REFERENCES assignments (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- ============================================
--- STUDY SUMMARIES TABLE
--- ============================================
-CREATE TABLE IF NOT EXISTS study_summaries (
-    id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    document_id INT DEFAULT NULL,
-    title VARCHAR(255) NOT NULL,
-    summary_text TEXT NOT NULL,
-    key_points JSON,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY user_id (user_id),
-    KEY document_id (document_id),
-    CONSTRAINT study_summaries_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT study_summaries_ibfk_2 FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- ============================================
@@ -179,4 +139,3 @@ CREATE TABLE IF NOT EXISTS user_calendar_configs (
     UNIQUE KEY user_provider (user_id, provider),
     CONSTRAINT user_calendar_configs_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-

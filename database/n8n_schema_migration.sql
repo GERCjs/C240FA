@@ -1,56 +1,45 @@
 -- ============================================
--- Study Buddy AI - n8n Integration Schema
--- Additional tables for n8n workflow support
+-- Study Buddy AI - Migration
+-- Removes deprecated tables (documents, study_summaries)
+-- and cleans up references
 -- Run: mysql -u root -p c240_ai < n8n_schema_migration.sql
 -- ============================================
 
 USE c240_ai;
 
 -- ============================================
--- DOCUMENT CHUNKS TABLE
--- Stores individual chunks for RAG pipeline
+-- DROP DEPRECATED TABLES AND REFERENCES
 -- ============================================
-CREATE TABLE IF NOT EXISTS document_chunks (
-    id INT NOT NULL AUTO_INCREMENT,
-    document_id INT NOT NULL,
-    user_id INT NOT NULL,
-    chunk_index INT NOT NULL DEFAULT 0,
-    chunk_text TEXT NOT NULL,
-    page_number INT DEFAULT NULL,
-    token_count INT DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_document_id (document_id),
-    KEY idx_user_id (user_id),
-    CONSTRAINT document_chunks_ibfk_1 FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE CASCADE,
-    CONSTRAINT document_chunks_ibfk_2 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- ============================================
--- EMBEDDINGS TABLE
--- Stores vector embeddings metadata
--- (actual vectors stored in ChromaDB)
--- ============================================
-CREATE TABLE IF NOT EXISTS embeddings (
-    id INT NOT NULL AUTO_INCREMENT,
-    document_id INT NOT NULL,
-    chunk_id INT NOT NULL,
-    user_id INT NOT NULL,
-    collection_name VARCHAR(100) NOT NULL DEFAULT 'student_knowledge',
-    chromadb_id VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id),
-    KEY idx_document_id (document_id),
-    KEY idx_chunk_id (chunk_id),
-    KEY idx_chromadb_id (chromadb_id),
-    CONSTRAINT embeddings_ibfk_1 FOREIGN KEY (document_id) REFERENCES documents (id) ON DELETE CASCADE,
-    CONSTRAINT embeddings_ibfk_2 FOREIGN KEY (chunk_id) REFERENCES document_chunks (id) ON DELETE CASCADE,
-    CONSTRAINT embeddings_ibfk_3 FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+-- Drop tables that depend on documents first
+DROP TABLE IF EXISTS embeddings;
+DROP TABLE IF EXISTS document_chunks;
+
+-- Remove document_id FK from flashcards (if it exists)
+SET @fk_exists = (SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+    WHERE CONSTRAINT_SCHEMA = 'c240_ai' AND TABLE_NAME = 'flashcards' AND CONSTRAINT_NAME = 'flashcards_ibfk_2');
+SET @sql = IF(@fk_exists > 0, 'ALTER TABLE flashcards DROP FOREIGN KEY flashcards_ibfk_2', 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Remove document_id column from flashcards (if it exists)
+SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS
+    WHERE TABLE_SCHEMA = 'c240_ai' AND TABLE_NAME = 'flashcards' AND COLUMN_NAME = 'document_id');
+SET @sql = IF(@col_exists > 0, 'ALTER TABLE flashcards DROP COLUMN document_id', 'SELECT 1');
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Drop study_summaries table
+DROP TABLE IF EXISTS study_summaries;
+
+-- Drop documents table
+DROP TABLE IF EXISTS documents;
 
 -- ============================================
 -- CONVERSATIONS TABLE
--- Enhanced chat tracking for n8n
+-- Enhanced chat tracking
 -- ============================================
 CREATE TABLE IF NOT EXISTS conversations (
     id INT NOT NULL AUTO_INCREMENT,
@@ -70,7 +59,6 @@ CREATE TABLE IF NOT EXISTS conversations (
 
 -- ============================================
 -- STUDY PLANS TABLE
--- Dedicated table for AI-generated study plans
 -- ============================================
 CREATE TABLE IF NOT EXISTS study_plans (
     id INT NOT NULL AUTO_INCREMENT,
@@ -97,7 +85,6 @@ CREATE TABLE IF NOT EXISTS study_plans (
 
 -- ============================================
 -- QUIZ QUESTIONS TABLE (Normalized)
--- Individual questions linked to quizzes
 -- ============================================
 CREATE TABLE IF NOT EXISTS quiz_questions (
     id INT NOT NULL AUTO_INCREMENT,
@@ -118,7 +105,6 @@ CREATE TABLE IF NOT EXISTS quiz_questions (
 
 -- ============================================
 -- QUIZ RESULTS TABLE (Enhanced)
--- Detailed grading results from n8n
 -- ============================================
 CREATE TABLE IF NOT EXISTS quiz_results (
     id INT NOT NULL AUTO_INCREMENT,
@@ -144,12 +130,11 @@ CREATE TABLE IF NOT EXISTS quiz_results (
 
 -- ============================================
 -- ACTIVITY LOG TABLE
--- Tracks all user activities for dashboard
 -- ============================================
 CREATE TABLE IF NOT EXISTS activity_log (
     id INT NOT NULL AUTO_INCREMENT,
     user_id INT NOT NULL,
-    activity_type ENUM('chat', 'upload', 'quiz', 'flashcard', 'summary', 'assignment', 'study_plan') NOT NULL,
+    activity_type ENUM('chat', 'quiz', 'flashcard', 'assignment', 'study_plan') NOT NULL,
     description VARCHAR(500) NOT NULL,
     reference_id INT DEFAULT NULL,
     metadata JSON,
@@ -163,7 +148,6 @@ CREATE TABLE IF NOT EXISTS activity_log (
 
 -- ============================================
 -- API KEYS TABLE
--- For webhook authentication
 -- ============================================
 CREATE TABLE IF NOT EXISTS api_keys (
     id INT NOT NULL AUTO_INCREMENT,
@@ -182,11 +166,4 @@ CREATE TABLE IF NOT EXISTS api_keys (
 -- ============================================
 -- Add indexes for performance
 -- ============================================
--- Index on documents for duplicate checking
-ALTER TABLE documents ADD INDEX idx_user_filename (user_id, original_name) ;
-
--- Index on flashcards for document lookup  
-ALTER TABLE flashcards ADD INDEX idx_user_document (user_id, document_id) ;
-
--- Index on chat_messages for session history
-ALTER TABLE chat_messages ADD INDEX idx_session_created (session_id, created_at) ;
+ALTER TABLE chat_messages ADD INDEX idx_session_created (session_id, created_at);
