@@ -451,7 +451,7 @@ function generateLocalQuiz(subject, topic, count, type, difficulty) {
             type: "mcq",
             question: `Which keywords are most closely related to "${chunk.topic}"?`,
             options: shuffleWithCorrect(
-                chunk.keywords.slice(0, 3).join(", ") || `${topic}, ${subject}`,
+                (chunk.keywords && chunk.keywords.length > 0) ? chunk.keywords.slice(0, 3).join(", ") : `${topic}, ${subject}`,
                 [
                     "router, firewall, packet",
                     "RAM, processor, motherboard",
@@ -459,7 +459,7 @@ function generateLocalQuiz(subject, topic, count, type, difficulty) {
                 ]
             ),
             correct_answer: "A",
-            explanation: `${chunk.topic} relates to: ${chunk.keywords.join(", ")}`
+            explanation: `${chunk.topic} relates to: ${(chunk.keywords && chunk.keywords.length > 0) ? chunk.keywords.join(", ") : topic}`
         })
     ];
 
@@ -497,7 +497,7 @@ function generateLocalQuiz(subject, topic, count, type, difficulty) {
         (chunk) => ({
             type: "short_answer",
             question: `How does "${chunk.topic}" relate to other concepts in ${chunk.subject || subject}?`,
-            correct_answer: `${chunk.topic} connects to ${chunk.keywords.slice(0, 3).join(", ")} in ${subject}.`,
+            correct_answer: `${chunk.topic} connects to ${(chunk.keywords && chunk.keywords.length > 0) ? chunk.keywords.slice(0, 3).join(", ") : topic} in ${subject}.`,
             explanation: `Concepts in ${subject} build on each other.`
         })
     ];
