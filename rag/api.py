@@ -4,6 +4,7 @@ from chunking import load_documents
 from embedding import embed_chunk
 from retrieval import save_embeddings, retrieve, retrieve_ranked
 from generator import generate_answer, generate_quiz, generate_summary, generate_flashcards, generate_study_plan
+from ai_planner import parse_calendar_query
 
 app = Flask(__name__)
 CORS(app)
@@ -146,6 +147,27 @@ def plan():
     plan_text = generate_study_plan(title, module, description, days_remaining, priority)
 
     return jsonify({"plan": plan_text})
+
+
+# =====================
+# AI CALENDAR PLANNER
+# =====================
+
+@app.route("/calendar-ai", methods=["POST"])
+def calendar_ai():
+    data = request.json
+    query = data.get("query", "")
+    current_time = data.get("current_time", "")
+
+    if not query:
+        return jsonify({
+            "action": "clarify",
+            "reply": "Please tell me what you would like to schedule or plan.",
+            "events": []
+        })
+
+    result = parse_calendar_query(query, current_time)
+    return jsonify(result)
 
 
 # =====================

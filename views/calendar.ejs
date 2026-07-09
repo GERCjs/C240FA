@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Calendar - Study Buddy AI</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- FullCalendar CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif !important;
+            background-color: #121214 !important;
+        }
+        
+        .page-container {
+            background-color: #121214;
+        }
+
+        /* Sidebar Glassmorphic Style */
+        .sidebar-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            height: 100%;
+        }
+
+        .calendar-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Search input decoration */
+        .search-wrapper {
+            position: relative;
+        }
+        
+        .search-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+        }
+
+        .search-input {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            border-radius: 20px;
+            padding-left: 36px;
+            color: #fff !important;
+            font-size: 0.9rem;
+            height: 38px;
+            transition: all 0.2s ease;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+            border-color: #6366f1 !important;
+            background-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* Mini Monthly Calendar Picker */
+        .mini-calendar {
+            background: rgba(255, 255, 255, 0.01);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .mini-calendar-header {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .mini-calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .mini-cal-header-cell {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.4);
+            padding: 4px 0;
+            text-transform: uppercase;
+        }
+
+        .mini-cal-day-cell {
+            font-size: 0.8rem;
+            padding: 6px 0;
+            cursor: pointer;
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.85);
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .mini-cal-day-cell:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mini-cal-day-cell.prev-month, 
+        .mini-cal-day-cell.next-month {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .mini-cal-day-cell.active {
+            background: #6366f1 !important;
+            color: #fff !important;
+            font-weight: bold;
+        }
+
+        .mini-cal-day-cell.today:not(.active) {
+            border: 1px solid #6366f1;
+            color: #6366f1;
+            font-weight: bold;
+        }
+
+        /* Checkbox filter styling */
+        .color-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .bg-danger-dot { background-color: #e74c3c; }
+        .bg-purple-dot { background-color: #9b59b6; }
+        .bg-info-dot { background-color: #3498db; }
+
+        .form-check {
+            padding-left: 0;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check-input {
+            float: right;
+            margin-left: auto;
+            margin-right: 0;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .form-check-input:checked {
+            background-color: #6366f1;
+            border-color: #6366f1;
+        }
+
+        .form-check-label {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex-grow: 1;
+        }
+
+        /* Settings Collapse Styling */
+        .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+        }
+
+        .sync-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .sync-card:hover {
+            transform: translateY(-1px);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .sync-icon {
+            font-size: 1.3em;
+            margin-right: 10px;
+        }
+        
+        .sync-google { color: #ea4335; }
+        .sync-outlook { color: #0078d4; }
+        .sync-apple { color: #f5f5f7; }
+
+        /* FullCalendar Customizations */
+        .fc {
+            color: #fff !important;
+        }
+        
+        .fc-theme-standard td, 
+        .fc-theme-standard th {
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        }
+
+        .fc-theme-standard .fc-scrollgrid {
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .fc .fc-toolbar-title {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
+        .fc .fc-button-primary {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #fff !important;
+            transition: all 0.2s ease;
+            text-transform: capitalize;
+            font-size: 0.85rem !important;
+        }
+
+        .fc .fc-button-primary:hover {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+
+        .fc .fc-button-active {
+            background-color: #6366f1 !important;
+            border-color: #6366f1 !important;
+        }
+
+        .fc-day-today {
+            background: rgba(99, 102, 241, 0.08) !important;
+        }
+
+        .fc-event {
+            cursor: pointer;
+            border-radius: 6px !important;
+            padding: 3px 6px !important;
+            font-size: 0.82rem !important;
+            font-weight: 500;
+            border: none !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15) !important;
+            transition: transform 0.1s ease;
+        }
+
+        .fc-event:hover {
+            transform: scale(1.02);
+        }
+
+        /* Modal styling variables & aesthetics */
+        .modal-content {
+            background-color: #18181c !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+            border-color: #6366f1 !important;
+        }
+
+        /* AI Chat Widget Styles */
+        .ai-chat-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: #fff;
+            border: none;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1050;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .ai-chat-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.6);
+        }
+
+        .ai-chat-window {
+            position: fixed;
+            bottom: 105px;
+            right: 30px;
+            width: 380px;
+            height: 520px;
+            background: rgba(24, 24, 28, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .ai-chat-window.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .ai-chat-header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .ai-chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .chat-bubble.assistant {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-bubble.user {
+            background: #6366f1;
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-chat-input-area {
+            padding: 15px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(24, 24, 28, 0.98);
+        }
+
+        .ai-suggested-chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 5px;
+        }
+
+        .ai-suggested-chips::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .ai-suggested-chips::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .ai-chip {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .ai-chip:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100 text-white page-container">
+    <%- include('partial/navbar') %>
+
+    <div class="container-fluid py-4 flex-grow-1 px-lg-5">
+        <div class="row g-4">
+            <!-- Sidebar: Search, Mini Calendar, Filters & Sync Config -->
+            <div class="col-lg-3">
+                <div class="sidebar-container d-flex flex-column gap-4">
+                    <!-- Title -->
+                    <div>
+                        <h4 class="mb-1 text-white font-weight-bold"><i class="fa-solid fa-calendar-days text-indigo me-2" style="color: #6366f1;"></i>Calendar</h4>
+                        <p class="text-secondary small mb-0">Organize and sync your academic schedule.</p>
+                    </div>
+
+                    <!-- Search Box -->
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="searchEvent" class="form-control search-input" placeholder="Search event...">
+                    </div>
+
+                    <!-- Mini Calendar -->
+                    <div class="mini-calendar">
+                        <div class="d-flex justify-content-between align-items-center mb-1 px-1">
+                            <span class="mini-calendar-header" id="miniCalMonthYear">August 2025</span>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-link text-white-50 p-1 border-0" id="miniCalPrev"><i class="fa-solid fa-chevron-left" style="font-size: 0.8rem;"></i></button>
+                                <button type="button" class="btn btn-sm btn-link text-white-50 p-1 border-0" id="miniCalNext"><i class="fa-solid fa-chevron-right" style="font-size: 0.8rem;"></i></button>
+                            </div>
+                        </div>
+                        <div class="mini-calendar-grid" id="miniCalendarGrid">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                    <!-- My Calendars Checklist -->
+                    <div>
+                        <h6 class="mb-3 text-white font-weight-bold small text-uppercase tracking-wider opacity-75">My calendars</h6>
+                        
+                        <div class="form-check">
+                            <label class="form-check-label" for="filterAssignments">
+                                <span class="color-dot bg-danger-dot"></span>Assignments (DL)
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="filterAssignments" checked>
+                        </div>
+                        
+                        <div class="form-check">
+                            <label class="form-check-label" for="filterSessions">
+                                <span class="color-dot bg-purple-dot"></span>Study Sessions
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="filterSessions" checked>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <label class="form-check-label" for="filterExternal">
+                                <span class="color-dot bg-info-dot"></span>External Sync
+                            </label>
+                            <input class="form-check-input" type="checkbox" id="filterExternal" checked>
+                        </div>
+
+                        <button class="btn btn-sm btn-outline-light w-100 py-2 border-opacity-25" id="btnAddCalendar" style="border-radius: 10px; font-size: 0.85rem;"><i class="fa-solid fa-plus me-1"></i> Add Calendar</button>
+                    </div>
+
+                    <!-- External Sync settings in accordion drawer -->
+                    <div class="accordion accordion-flush" id="syncAccordion">
+                        <div class="accordion-item bg-transparent border-0">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-transparent text-white border-0 px-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSync" aria-expanded="false" style="font-size: 0.9rem; font-weight: 600;">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2 text-white-50"></i> Sync Connections
+                                </button>
+                            </h2>
+                            <div id="collapseSync" class="accordion-collapse collapse" data-bs-parent="#syncAccordion">
+                                <div class="accordion-body px-0 py-2">
+                                    <!-- Google Calendar -->
+                                    <div class="sync-card d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-brands fa-google sync-icon sync-google"></i>
+                                            <div>
+                                                <h6 class="mb-0 text-white" style="font-size: 0.85rem;">Google</h6>
+                                                <small class="text-secondary" style="font-size: 0.75rem;">
+                                                    <%= connections.google ? 'Connected' : 'Not Connected' %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <% if (connections.google) { %>
+                                            <form action="/calendar/disconnect/google" method="POST" class="m-0">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size: 0.7rem;">Disconnect</button>
+                                            </form>
+                                        <% } else { %>
+                                            <a href="/auth/google" class="btn btn-xs btn-primary py-0 px-2" style="font-size: 0.7rem; background-color: #6366f1; border: none;">Connect</a>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Apple Calendar -->
+                                    <div class="sync-card d-flex align-items-center justify-content-between">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa-brands fa-apple sync-icon sync-apple"></i>
+                                            <div>
+                                                <h6 class="mb-0 text-white" style="font-size: 0.85rem;">iCloud</h6>
+                                                <small class="text-secondary" style="font-size: 0.75rem;">
+                                                    <%= connections.apple ? 'Connected' : 'Not Connected' %>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <% if (connections.apple) { %>
+                                            <form action="/calendar/disconnect/apple" method="POST" class="m-0">
+                                                <button type="submit" class="btn btn-xs btn-outline-danger py-0 px-2" style="font-size: 0.7rem;">Disconnect</button>
+                                            </form>
+                                        <% } else { %>
+                                            <button class="btn btn-xs btn-primary py-0 px-2" style="font-size: 0.7rem; background-color: #6366f1; border: none;" data-bs-toggle="modal" data-bs-target="#appleConnectModal">Connect</button>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Grid Area -->
+            <div class="col-lg-9">
+                <div class="calendar-container h-100">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Apple iCloud CalDAV Connection Modal -->
+    <div class="modal fade" id="appleConnectModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="/calendar/connect/apple" method="POST" class="w-100">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title font-weight-bold"><i class="fa-brands fa-apple me-2"></i>Connect iCloud Calendar</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body py-4 px-4">
+                        <p class="small text-secondary mb-3">
+                            Apple requires an **App-Specific Password** for security. Generate one at <a href="https://appleid.apple.com" target="_blank" class="text-info" style="color: #6366f1 !important;">appleid.apple.com</a> under **Sign-In and Security**.
+                        </p>
+                        <div class="mb-3">
+                            <label class="form-label small text-white-50">iCloud Email Address</label>
+                            <input type="email" name="email" class="form-control" style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;" placeholder="username@icloud.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-white-50">App-Specific Password</label>
+                            <input type="password" name="app_password" class="form-control" style="background-color: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;" placeholder="xxxx-xxxx-xxxx-xxxx" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-secondary px-4" style="border-radius: 20px; font-size: 0.85rem;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary px-4" style="background-color: #6366f1; border: none; border-radius: 20px; font-size: 0.85rem;">Connect iCloud</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Study Session Modal (Sleek Reference design) -->
+    <div class="modal fade" id="createSessionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+            <div class="modal-content border-0 shadow-lg" style="background: #18181c; border-radius: 16px;">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white p-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-0 px-4 pb-4">
+                    <div class="mb-4">
+                        <input type="text" id="sessionTitle" class="form-control form-control-lg border-0 bg-transparent text-white px-0 font-weight-bold" style="font-size: 1.4rem; border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important; border-radius: 0; box-shadow: none;" placeholder="Event name" required>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-regular fa-calendar-days text-white-50 me-3" style="font-size: 1.1rem; width: 20px;"></i>
+                        <div class="flex-grow-1">
+                            <label class="small text-white-50 d-block mb-1" style="font-size: 0.75rem;">Start Time</label>
+                            <input type="datetime-local" id="sessionStart" class="form-control border-0 bg-transparent text-white p-0 shadow-none" style="font-size: 0.9rem;" required>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="fa-regular fa-clock text-white-50 me-3" style="font-size: 1.1rem; width: 20px;"></i>
+                        <div class="flex-grow-1">
+                            <label class="small text-white-50 d-block mb-1" style="font-size: 0.75rem;">End Time</label>
+                            <input type="datetime-local" id="sessionEnd" class="form-control border-0 bg-transparent text-white p-0 shadow-none" style="font-size: 0.9rem;" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mb-4 ps-4">
+                        <div class="form-check m-0">
+                            <label class="form-check-label text-white-50 small m-0" for="sessionAllDay">
+                                All day
+                            </label>
+                            <input class="form-check-input m-0" type="checkbox" id="sessionAllDay">
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-4">
+                        <i class="fa-solid fa-users text-white-50 me-3" style="font-size: 1.1rem; width: 20px;"></i>
+                        <input type="text" class="form-control border-0 bg-transparent text-white p-0 shadow-none" style="font-size: 0.9rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 0;" placeholder="Add guests">
+                    </div>
+
+                    <div class="d-flex align-items-start mb-4">
+                        <i class="fa-solid fa-align-left text-white-50 me-3 mt-1" style="font-size: 1.1rem; width: 20px;"></i>
+                        <textarea class="form-control border-0 bg-transparent text-white p-0 shadow-none" style="font-size: 0.9rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; border-radius: 0; min-height: 40px;" placeholder="Description"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn px-4 py-2" style="background: rgba(255, 255, 255, 0.05); color: #fff; border-radius: 20px; font-size: 0.85rem;" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="saveSessionBtn" class="btn btn-primary px-4 py-2" style="border-radius: 20px; font-size: 0.85rem; background-color: #6366f1; border: none;">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Session/Event Modal (Sleek Design) -->
+    <div class="modal fade" id="viewEventModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+            <div class="modal-content border-0 shadow-lg" style="background: #18181c; border-radius: 16px;">
+                <div class="modal-header border-0 pb-0 justify-content-end">
+                    <button type="button" class="btn-close btn-close-white p-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body pt-0 px-4 pb-4">
+                    <div class="mb-3">
+                        <h4 id="eventTitle" class="text-white font-weight-bold mb-3" style="font-size: 1.25rem;">Event Details</h4>
+                    </div>
+                    <div id="eventDetailsContent" class="text-white-50 mb-3" style="font-size: 0.9rem;">
+                        <!-- Dynamically filled -->
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="button" class="btn px-4 py-2" style="background: rgba(255, 255, 255, 0.05); color: #fff; border-radius: 20px; font-size: 0.85rem;" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="deleteSessionBtn" class="btn btn-danger px-4 py-2 d-none" style="border-radius: 20px; font-size: 0.85rem;">Delete Session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating AI Calendar Assistant Widget -->
+    <button class="ai-chat-toggle" id="aiChatToggle" title="Open AI Study Assistant">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <div class="d-flex align-items-center gap-2">
+                <div class="position-relative">
+                    <div class="rounded-circle bg-indigo d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);">
+                        <i class="fa-solid fa-robot text-white" style="font-size: 0.95rem;"></i>
+                    </div>
+                    <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 10px; height: 10px;"></span>
+                </div>
+                <div>
+                    <h6 class="mb-0 text-white font-weight-bold" style="font-size: 0.9rem;">AI Calendar Assistant</h6>
+                    <small class="text-success" style="font-size: 0.72rem;">Online & ready to plan</small>
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-white-50 p-1 border-0" id="aiChatClose"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="ai-chat-messages" id="aiChatMessages">
+            <div class="chat-bubble assistant">
+                Hello! I am your AI Study Assistant. Tell me what you'd like to do, and I'll update your calendar automatically. For example:
+                <ul class="ps-3 mb-0 mt-2">
+                    <li>"Suggest a study plan for my day"</li>
+                    <li>"Schedule a Math session tomorrow from 2pm to 4pm"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="ai-chat-input-area">
+            <div class="ai-suggested-chips">
+                <span class="ai-chip" onclick="sendSuggestedQuery('Plan my day today')">Plan my day today</span>
+                <span class="ai-chip" onclick="sendSuggestedQuery('Schedule Python session tomorrow at 3 PM')">Schedule session tomorrow</span>
+                <span class="ai-chip" onclick="sendSuggestedQuery('Clear study session at 5pm')">Clear 5pm session</span>
+            </div>
+            <div class="input-group">
+                <input type="text" id="aiChatInput" class="form-control border-0" style="background-color: rgba(255, 255, 255, 0.05); color: #fff; border-radius: 12px 0 0 12px; font-size: 0.88rem;" placeholder="Ask AI to plan or schedule...">
+                <button class="btn btn-primary px-3" id="aiChatSend" style="background-color: #6366f1; border: none; border-radius: 0 12px 12px 0;"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <%- include('partial/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var createModal = new bootstrap.Modal(document.getElementById('createSessionModal'));
+            var viewModal = new bootstrap.Modal(document.getElementById('viewEventModal'));
+            
+            // local cached events for instant filtering
+            let cachedEvents = [];
+            
+            // Mini Calendar State
+            let miniCalDate = new Date();
+            let selectedDate = new Date();
+            
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                editable: false,
+                selectable: true,
+                events: function(fetchInfo, successCallback, failureCallback) {
+                    if (cachedEvents.length > 0) {
+                        successCallback(filterLocalEvents(cachedEvents));
+                    } else {
+                        fetch('/calendar/events')
+                            .then(res => res.json())
+                            .then(events => {
+                                cachedEvents = events;
+                                successCallback(filterLocalEvents(cachedEvents));
+                            })
+                            .catch(err => {
+                                console.error("Error fetching calendar events:", err);
+                                failureCallback(err);
+                            });
+                    }
+                },
+                
+                // Click date to create study session
+                select: function(info) {
+                    // Set default dates
+                    document.getElementById('sessionStart').value = info.startStr + "T09:00";
+                    document.getElementById('sessionEnd').value = info.startStr + "T11:00";
+                    document.getElementById('sessionTitle').value = "";
+                    document.getElementById('sessionAllDay').checked = info.allDay || false;
+                    
+                    // Show modal
+                    createModal.show();
+                },
+                
+                // Click existing event to view details
+                eventClick: function(info) {
+                    var props = info.event.extendedProps;
+                    var title = info.event.title;
+                    
+                    document.getElementById('eventTitle').innerText = title;
+                    
+                    var html = '';
+                    var deleteBtn = document.getElementById('deleteSessionBtn');
+                    deleteBtn.className = 'btn btn-danger px-4 py-2 d-none'; // default hide
+                    
+                    if (props.type === 'assignment') {
+                        html = `
+                            <div class="d-flex flex-column gap-2">
+                                <div><strong class="text-white">Module:</strong> ${props.module}</div>
+                                <div><strong class="text-white">Priority:</strong> <span class="badge ${props.priority === 'high' ? 'bg-danger' : props.priority === 'medium' ? 'bg-warning text-dark' : 'bg-primary'}">${props.priority}</span></div>
+                                <div><strong class="text-white">Status:</strong> <span class="badge bg-secondary">${props.status}</span></div>
+                                <div><strong class="text-white">Deadline:</strong> ${new Date(info.event.start).toLocaleString()}</div>
+                            </div>
+                            <hr class="border-secondary">
+                            <a href="/assignments" class="btn btn-sm btn-primary w-100 py-2 border-0" style="background-color: #6366f1; border-radius: 10px;">Go to Assignments Page</a>
+                        `;
+                    } else {
+                        html = `
+                            <div class="d-flex flex-column gap-2">
+                                <div><strong class="text-white">Start:</strong> ${new Date(info.event.start).toLocaleString()}</div>
+                                <div><strong class="text-white">End:</strong> ${new Date(info.event.end || info.event.start).toLocaleString()}</div>
+                                <div><strong class="text-white">Status:</strong> <span class="badge bg-purple" style="background-color: #9b59b6;">${props.status || 'scheduled'}</span></div>
+                            </div>
+                        `;
+                        // Allow delete for study sessions
+                        deleteBtn.className = 'btn btn-danger px-4 py-2 d-block';
+                        deleteBtn.onclick = function() {
+                            if (confirm('Delete this study session?')) {
+                                fetch(`/calendar/sessions/${props.dbId}/delete`, {
+                                    method: 'POST'
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        info.event.remove();
+                                        // Clear cache so it fetches fresh on next load
+                                        cachedEvents = cachedEvents.filter(e => e.id !== `session-${props.dbId}`);
+                                        viewModal.hide();
+                                    }
+                                });
+                            }
+                        };
+                    }
+                    
+                    document.getElementById('eventDetailsContent').innerHTML = html;
+                    viewModal.show();
+                },
+                
+                // Synchronize mini calendar month view when main calendar navigation occurs
+                datesSet: function(info) {
+                    const activeDate = calendar.getDate();
+                    selectedDate = activeDate;
+                    miniCalDate = new Date(activeDate);
+                    renderMiniCalendar();
+                }
+            });
+            
+            calendar.render();
+
+            // ============================================
+            // DYNAMIC EVENT FILTERING LOGIC
+            // ============================================
+            function filterLocalEvents(eventsList) {
+                const searchKeyword = document.getElementById('searchEvent').value.toLowerCase();
+                const filterAssignments = document.getElementById('filterAssignments').checked;
+                const filterSessions = document.getElementById('filterSessions').checked;
+                const filterExternal = document.getElementById('filterExternal').checked;
+                
+                return eventsList.filter(e => {
+                    const titleMatches = e.title.toLowerCase().includes(searchKeyword);
+                    
+                    const type = e.extendedProps ? e.extendedProps.type : '';
+                    let categoryMatches = true;
+                    if (type === 'assignment') {
+                        categoryMatches = filterAssignments;
+                    } else if (type === 'session') {
+                        categoryMatches = filterSessions;
+                    } else {
+                        // External integration sync event fallbacks (if any)
+                        categoryMatches = filterExternal;
+                    }
+                    
+                    return titleMatches && categoryMatches;
+                });
+            }
+
+            function triggerRerender() {
+                // This will trigger calendar.events callback with cached data
+                calendar.refetchEvents();
+            }
+
+            // Input and checkbox listeners
+            document.getElementById('searchEvent').addEventListener('input', triggerRerender);
+            document.getElementById('filterAssignments').addEventListener('change', triggerRerender);
+            document.getElementById('filterSessions').addEventListener('change', triggerRerender);
+            document.getElementById('filterExternal').addEventListener('change', triggerRerender);
+
+            // Add Calendar Alert Button Hook
+            document.getElementById('btnAddCalendar').addEventListener('click', function() {
+                alert("Study Buddy matches academic events automatically. You can toggle calendar layers in the checkboxes above, or connect Google/Outlook/iCloud calendars in the 'Sync Connections' drawer below.");
+            });
+
+            // ============================================
+            // MINI MONTH CALENDAR COMPONENT
+            // ============================================
+            function renderMiniCalendar() {
+                const year = miniCalDate.getFullYear();
+                const month = miniCalDate.getMonth();
+                
+                const monthNames = [
+                    "January", "February", "March", "April", "May", "June", 
+                    "July", "August", "September", "October", "November", "December"
+                ];
+                document.getElementById('miniCalMonthYear').innerText = `${monthNames[month]} ${year}`;
+                
+                const gridEl = document.getElementById('miniCalendarGrid');
+                gridEl.innerHTML = '';
+                
+                // Add weekdays (S M T W T F S)
+                const weekdays = ["S", "M", "T", "W", "T", "F", "S"];
+                weekdays.forEach(day => {
+                    const cell = document.createElement('div');
+                    cell.className = 'mini-cal-header-cell';
+                    cell.innerText = day;
+                    gridEl.appendChild(cell);
+                });
+                
+                const firstDayIndex = new Date(year, month, 1).getDay();
+                const totalDays = new Date(year, month + 1, 0).getDate();
+                const prevTotalDays = new Date(year, month, 0).getDate();
+                
+                // Prev month padding days
+                for (let i = firstDayIndex - 1; i >= 0; i--) {
+                    const day = prevTotalDays - i;
+                    const cell = document.createElement('div');
+                    cell.className = 'mini-cal-day-cell prev-month';
+                    cell.innerText = day;
+                    cell.addEventListener('click', () => {
+                        const targetDate = new Date(year, month - 1, day);
+                        selectMiniCalDate(targetDate);
+                    });
+                    gridEl.appendChild(cell);
+                }
+                
+                // Current month days
+                for (let day = 1; day <= totalDays; day++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mini-cal-day-cell';
+                    
+                    const cellDate = new Date(year, month, day);
+                    
+                    // Highlight selected date
+                    if (isSameDay(cellDate, selectedDate)) {
+                        cell.classList.add('active');
+                    }
+                    
+                    // Highlight today
+                    if (isSameDay(cellDate, new Date())) {
+                        cell.classList.add('today');
+                    }
+                    
+                    cell.innerText = day;
+                    cell.addEventListener('click', () => {
+                        selectMiniCalDate(cellDate);
+                    });
+                    gridEl.appendChild(cell);
+                }
+                
+                // Next month padding days to complete a 6-row layout grid (42 cells)
+                const totalCellsUsed = firstDayIndex + totalDays;
+                const remainingCells = 42 - totalCellsUsed;
+                for (let day = 1; day <= remainingCells; day++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'mini-cal-day-cell next-month';
+                    cell.innerText = day;
+                    cell.addEventListener('click', () => {
+                        const targetDate = new Date(year, month + 1, day);
+                        selectMiniCalDate(targetDate);
+                    });
+                    gridEl.appendChild(cell);
+                }
+            }
+            
+            function isSameDay(d1, d2) {
+                return d1.getFullYear() === d2.getFullYear() &&
+                       d1.getMonth() === d2.getMonth() &&
+                       d1.getDate() === d2.getDate();
+            }
+            
+            function selectMiniCalDate(date) {
+                selectedDate = date;
+                miniCalDate = new Date(date); // Center mini calendar month
+                renderMiniCalendar();
+                calendar.gotoDate(date); // Tell FullCalendar to shift view
+            }
+            
+            document.getElementById('miniCalPrev').addEventListener('click', () => {
+                miniCalDate.setMonth(miniCalDate.getMonth() - 1);
+                renderMiniCalendar();
+            });
+            
+            document.getElementById('miniCalNext').addEventListener('click', () => {
+                miniCalDate.setMonth(miniCalDate.getMonth() + 1);
+                renderMiniCalendar();
+            });
+
+            // Initial Draw of Mini Calendar
+            renderMiniCalendar();
+            
+            // ============================================
+            // SAVE STUDY SESSION HOOK
+            // ============================================
+            document.getElementById('saveSessionBtn').addEventListener('click', function() {
+                var title = document.getElementById('sessionTitle').value;
+                var start = document.getElementById('sessionStart').value;
+                var end = document.getElementById('sessionEnd').value;
+                
+                if (!title || !start || !end) {
+                    alert('Please fill out all fields.');
+                    return;
+                }
+                
+                fetch('/calendar/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        start_time: start,
+                        end_time: end
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear cached events to force a fresh fetch from database
+                        cachedEvents = [];
+                        calendar.refetchEvents();
+                        createModal.hide();
+                    } else {
+                        alert('Error saving session: ' + data.error);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Connection error occurred.');
+                });
+            });
+
+            // ============================================
+            // AI CALENDAR ASSISTANT JS LOGIC
+            // ============================================
+            const aiChatToggle = document.getElementById('aiChatToggle');
+            const aiChatWindow = document.getElementById('aiChatWindow');
+            const aiChatClose = document.getElementById('aiChatClose');
+            const aiChatSend = document.getElementById('aiChatSend');
+            const aiChatInput = document.getElementById('aiChatInput');
+            const aiChatMessages = document.getElementById('aiChatMessages');
+
+            // Open/close widget
+            aiChatToggle.addEventListener('click', function() {
+                aiChatWindow.classList.toggle('show');
+                if (aiChatWindow.classList.contains('show')) {
+                    aiChatInput.focus();
+                }
+            });
+
+            aiChatClose.addEventListener('click', function() {
+                aiChatWindow.classList.remove('show');
+            });
+
+            // Global suggested query helper
+            window.sendSuggestedQuery = function(queryText) {
+                sendCalendarAIQuery(queryText);
+            };
+
+            // Send message triggers
+            aiChatSend.addEventListener('click', function() {
+                const text = aiChatInput.value.trim();
+                if (text) {
+                    sendCalendarAIQuery(text);
+                    aiChatInput.value = '';
+                }
+            });
+
+            aiChatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const text = aiChatInput.value.trim();
+                    if (text) {
+                        sendCalendarAIQuery(text);
+                        aiChatInput.value = '';
+                    }
+                }
+            });
+
+            function scrollToBottom() {
+                aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+            }
+
+            function appendMessage(sender, text) {
+                const bubble = document.createElement('div');
+                bubble.className = `chat-bubble ${sender}`;
+                bubble.innerText = text;
+                aiChatMessages.appendChild(bubble);
+                scrollToBottom();
+                return bubble;
+            }
+
+            function sendCalendarAIQuery(queryText) {
+                // 1. Add User bubble
+                appendMessage('user', queryText);
+
+                // 2. Add loading bubble
+                const loadingBubble = appendMessage('assistant', 'Planning and matching schedule... Please wait.');
+
+                // Get local time in ISO format (without timezone offset prefixing - we pass current time context)
+                const currentLocalTime = new Date().toISOString().slice(0, 19);
+
+                // 3. Post to AI backend
+                fetch('/calendar/ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        query: queryText,
+                        current_time: currentLocalTime
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    // Remove loading bubble
+                    loadingBubble.remove();
+
+                    if (data.success) {
+                        // Append AI reply
+                        appendMessage('assistant', data.reply);
+
+                        // If events were added, refetch calendar data
+                        if ((data.action === 'create_event' || data.action === 'daily_plan') && data.events && data.events.length > 0) {
+                            cachedEvents = [];
+                            calendar.refetchEvents();
+                        }
+                    } else {
+                        appendMessage('assistant', 'Sorry, I encountered an issue processing your request. Please try again.');
+                    }
+                })
+                .catch(err => {
+                    console.error("AI Calendar request failed:", err);
+                    loadingBubble.remove();
+                    appendMessage('assistant', 'Connection error. Please make sure both servers are running.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

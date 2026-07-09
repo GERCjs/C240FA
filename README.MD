@@ -165,7 +165,7 @@ npm install
 ### 2. Install Python Dependencies
 
 ```bash
-pip install flask flask-cors sentence-transformers chromadb requests
+pip install flask flask-cors sentence-transformers chromadb openai
 ```
 
 ### 3. Install Ollama + Model
