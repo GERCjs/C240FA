@@ -359,6 +359,17 @@ exports.reviewFlashcard = (req, res) => {
     });
 };
 
+exports.deleteFlashcard = (req, res) => {
+    const userId = req.session.userId;
+    const cardId = parseInt(req.params.id);
+
+    const sql = "DELETE FROM flashcards WHERE id = ? AND user_id = ?";
+    db.query(sql, [cardId, userId], (err) => {
+        if (err) console.log(err);
+        res.redirect("/flashcards");
+    });
+};
+
 // Local summary generator fallback - extracts meaningful content
 function generateLocalSummary(content, title) {
     // Clean up the content - remove headers, footers, page numbers, and short lines

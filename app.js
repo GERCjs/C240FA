@@ -10,7 +10,7 @@ const userController = require("./controllers/userController");
 const chatController = require("./controllers/chatController");
 const assignmentController = require("./controllers/assignmentController");
 const quizController = require("./controllers/quizController");
-const documentController = require("./controllers/documentController");
+
 const summaryController = require("./controllers/summaryController");
 const dashboardController = require("./controllers/dashboardController");
 const adminController = require("./controllers/adminController");
@@ -97,39 +97,13 @@ app.post("/quizzes/:id/submit", requireAuth, quizController.submitQuiz);
 app.get("/quizzes/:id/results", requireAuth, quizController.showResults);
 app.post("/quizzes/:id/delete", requireAuth, quizController.deleteQuiz);
 
-// Documents
-app.get("/documents", requireAuth, documentController.showDocuments);
-app.post("/documents/upload", requireAuth, (req, res, next) => {
-    upload.single("document")(req, res, (err) => {
-        if (err) {
-            if (err.code === "LIMIT_FILE_SIZE") {
-                return res.render("documents", {
-                    documents: [],
-                    error: "File is too large. Maximum size is 25MB.",
-                    success: null
-                });
-            }
-            return res.render("documents", {
-                documents: [],
-                error: err.message || "Upload failed. Please try again.",
-                success: null
-            });
-        }
-        documentController.uploadDocument(req, res);
-    });
-});
-app.post("/documents/:id/delete", requireAuth, documentController.deleteDocument);
 
-// Summaries
-app.get("/summaries", requireAuth, summaryController.showSummaries);
-app.post("/summaries/generate", requireAuth, summaryController.generateSummary);
-app.get("/summaries/:id", requireAuth, summaryController.showSummary);
-app.get("/summaries/:id/export", requireAuth, summaryController.exportSummary);
 
 // Flashcards
 app.get("/flashcards", requireAuth, summaryController.showFlashcards);
 app.post("/flashcards/generate", requireAuth, summaryController.generateFlashcards);
 app.post("/flashcards/:id/review", requireAuth, summaryController.reviewFlashcard);
+app.post("/flashcards/:id/delete", requireAuth, summaryController.deleteFlashcard);
 
 // =====================
 // ADMIN ROUTES
