@@ -15,6 +15,9 @@ const summaryController = require("./controllers/summaryController");
 const dashboardController = require("./controllers/dashboardController");
 const adminController = require("./controllers/adminController");
 
+// n8n API Routes
+const n8nRoutes = require("./routes/n8nRoutes");
+
 // Middleware
 const { requireAuth, requireAdmin } = require("./middleware/auth");
 const upload = require("./middleware/upload");
@@ -45,6 +48,11 @@ app.use((req, res, next) => {
     } : null;
     next();
 });
+
+// =====================
+// n8n API ROUTES
+// =====================
+app.use("/api", n8nRoutes);
 
 // =====================
 // PUBLIC ROUTES
@@ -87,10 +95,29 @@ app.post("/quizzes/generate", requireAuth, quizController.generateQuiz);
 app.get("/quizzes/:id", requireAuth, quizController.showQuiz);
 app.post("/quizzes/:id/submit", requireAuth, quizController.submitQuiz);
 app.get("/quizzes/:id/results", requireAuth, quizController.showResults);
+app.post("/quizzes/:id/delete", requireAuth, quizController.deleteQuiz);
 
 // Documents
 app.get("/documents", requireAuth, documentController.showDocuments);
-app.post("/documents/upload", requireAuth, upload.single("document"), documentController.uploadDocument);
+app.post("/documents/upload", requireAuth, (req, res, next) => {
+    upload.single("document")(req, res, (err) => {
+        if (err) {
+            if (err.code === "LIMIT_FILE_SIZE") {
+                return res.render("documents", {
+                    documents: [],
+                    error: "File is too large. Maximum size is 25MB.",
+                    success: null
+                });
+            }
+            return res.render("documents", {
+                documents: [],
+                error: err.message || "Upload failed. Please try again.",
+                success: null
+            });
+        }
+        documentController.uploadDocument(req, res);
+    });
+});
 app.post("/documents/:id/delete", requireAuth, documentController.deleteDocument);
 
 // Summaries

@@ -13,22 +13,23 @@ const storage = multer.diskStorage({
     }
 });
 
-// File filter - only allow PDF, TXT, MD, DOCX
+// File filter - only allow PDF, TXT, MD, DOCX, PPTX
 const fileFilter = (req, file, cb) => {
     const allowedTypes = [
         "application/pdf",
         "text/plain",
         "text/markdown",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
     ];
 
-    const allowedExtensions = [".pdf", ".txt", ".md", ".docx"];
+    const allowedExtensions = [".pdf", ".txt", ".md", ".docx", ".pptx"];
     const ext = path.extname(file.originalname).toLowerCase();
 
     if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(ext)) {
         cb(null, true);
     } else {
-        cb(new Error("Only PDF, TXT, MD, and DOCX files are allowed."), false);
+        cb(new Error("Only PDF, TXT, MD, DOCX, and PPTX files are allowed."), false);
     }
 };
 
@@ -36,7 +37,7 @@ const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-        fileSize: 10 * 1024 * 1024 // 10MB max
+        fileSize: 25 * 1024 * 1024 // 25MB max
     }
 });
 
