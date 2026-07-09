@@ -14,6 +14,7 @@ const documentController = require("./controllers/documentController");
 const summaryController = require("./controllers/summaryController");
 const dashboardController = require("./controllers/dashboardController");
 const adminController = require("./controllers/adminController");
+const calendarController = require("./controllers/calendarController");
 
 // n8n API Routes
 const n8nRoutes = require("./routes/n8nRoutes");
@@ -130,6 +131,17 @@ app.get("/summaries/:id/export", requireAuth, summaryController.exportSummary);
 app.get("/flashcards", requireAuth, summaryController.showFlashcards);
 app.post("/flashcards/generate", requireAuth, summaryController.generateFlashcards);
 app.post("/flashcards/:id/review", requireAuth, summaryController.reviewFlashcard);
+
+// Calendar & Sync
+app.get("/calendar", requireAuth, calendarController.showCalendar);
+app.get("/calendar/events", requireAuth, calendarController.getEvents);
+app.post("/calendar/sessions", requireAuth, calendarController.createStudySession);
+app.post("/calendar/sessions/:id/delete", requireAuth, calendarController.deleteStudySession);
+app.post("/calendar/ai", requireAuth, calendarController.handleCalendarAI);
+app.get("/auth/google", requireAuth, calendarController.authGoogle);
+app.get("/auth/google/callback", requireAuth, calendarController.authGoogleCallback);
+app.post("/calendar/connect/apple", requireAuth, calendarController.connectApple);
+app.post("/calendar/disconnect/:provider", requireAuth, calendarController.disconnectProvider);
 
 // =====================
 // ADMIN ROUTES
