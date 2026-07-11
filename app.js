@@ -82,6 +82,9 @@ app.post("/chat", requireAuth, chatController.askQuestion);
 app.post("/chat/new", requireAuth, chatController.newSession);
 app.get("/chat/history", requireAuth, chatController.getHistory);
 app.get("/chat/session/:id", requireAuth, chatController.getSession);
+app.patch("/chat/:id/rename", requireAuth, chatController.renameSession);
+app.patch("/chat/:id/pin", requireAuth, chatController.pinSession);
+app.delete("/chat/:id", requireAuth, chatController.deleteSession);
 
 // Assignments
 app.get("/assignments", requireAuth, assignmentController.showAssignments);

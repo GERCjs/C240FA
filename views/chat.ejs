@@ -22,11 +22,71 @@
             </div>
             <div class="chat-list">
                 <% if (typeof sessions !== 'undefined' && sessions.length > 0) { %>
-                    <% sessions.forEach(s => { %>
-                        <a href="/chat/session/<%= s.id %>" class="chat-history-item <%= (typeof currentSession !== 'undefined' && currentSession == s.id) ? 'active' : '' %>">
-                            <%= s.title || 'Untitled Chat' %>
-                        </a>
-                    <% }) %>
+                    <div class="chat-error d-none" id="chatActionError"></div>
+                    <%
+                        const pinnedSessions = sessions.filter(s => s.is_pinned);
+                        const regularSessions = sessions.filter(s => !s.is_pinned);
+                    %>
+
+                    <% if (pinnedSessions.length > 0) { %>
+                        <div class="chat-section-label">Pinned</div>
+                        <div class="chat-section" data-section="pinned">
+                        <% pinnedSessions.forEach(s => { %>
+                            <div class="chat-history-row <%= (typeof currentSession !== 'undefined' && currentSession == s.id) ? 'selected' : '' %>" data-session-id="<%= s.id %>" data-title="<%= s.title || 'Untitled Chat' %>" data-pinned="true" data-created-at="<%= new Date(s.created_at).getTime() %>">
+                                <a href="/chat/session/<%= s.id %>" class="chat-history-item <%= (typeof currentSession !== 'undefined' && currentSession == s.id) ? 'active' : '' %>">
+                                    <span class="pin-indicator" aria-hidden="true">&#128204;</span>
+                                    <span class="chat-title-text"><%= s.title || 'Untitled Chat' %></span>
+                                </a>
+                                <form class="chat-rename-form d-none">
+                                    <input type="text" class="chat-rename-input" maxlength="60" value="<%= s.title || 'Untitled Chat' %>" aria-label="Rename chat">
+                                    <div class="chat-rename-actions">
+                                        <button type="submit">Save</button>
+                                        <button type="button" class="rename-cancel-btn">Cancel</button>
+                                    </div>
+                                </form>
+                                <div class="chat-options">
+                                    <button type="button" class="chat-options-btn" aria-label="Chat options" aria-haspopup="true" aria-expanded="false">...</button>
+                                    <div class="chat-options-menu d-none" role="menu">
+                                        <button type="button" class="rename-chat-btn" role="menuitem" aria-label="Rename chat">Rename</button>
+                                        <button type="button" class="pin-chat-btn" role="menuitem" aria-label="Pin chat">Unpin</button>
+                                        <button type="button" class="delete-chat-btn" role="menuitem" aria-label="Delete chat">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                        </div>
+                    <% } %>
+
+                    <% if (regularSessions.length > 0) { %>
+                        <% if (pinnedSessions.length > 0) { %>
+                            <div class="chat-section-label">Chats</div>
+                        <% } %>
+                        <div class="chat-section" data-section="regular">
+                        <% regularSessions.forEach(s => { %>
+                            <div class="chat-history-row <%= (typeof currentSession !== 'undefined' && currentSession == s.id) ? 'selected' : '' %>" data-session-id="<%= s.id %>" data-title="<%= s.title || 'Untitled Chat' %>" data-pinned="false" data-created-at="<%= new Date(s.created_at).getTime() %>">
+                                <a href="/chat/session/<%= s.id %>" class="chat-history-item <%= (typeof currentSession !== 'undefined' && currentSession == s.id) ? 'active' : '' %>">
+                                    <span class="pin-indicator d-none" aria-hidden="true">&#128204;</span>
+                                    <span class="chat-title-text"><%= s.title || 'Untitled Chat' %></span>
+                                </a>
+                                <form class="chat-rename-form d-none">
+                                    <input type="text" class="chat-rename-input" maxlength="60" value="<%= s.title || 'Untitled Chat' %>" aria-label="Rename chat">
+                                    <div class="chat-rename-actions">
+                                        <button type="submit">Save</button>
+                                        <button type="button" class="rename-cancel-btn">Cancel</button>
+                                    </div>
+                                </form>
+                                <div class="chat-options">
+                                    <button type="button" class="chat-options-btn" aria-label="Chat options" aria-haspopup="true" aria-expanded="false">...</button>
+                                    <div class="chat-options-menu d-none" role="menu">
+                                        <button type="button" class="rename-chat-btn" role="menuitem" aria-label="Rename chat">Rename</button>
+                                        <button type="button" class="pin-chat-btn" role="menuitem" aria-label="Pin chat">Pin</button>
+                                        <button type="button" class="delete-chat-btn" role="menuitem" aria-label="Delete chat">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                        </div>
+                    <% } %>
                 <% } else { %>
                     <div class="text-center text-muted mt-3" style="font-size: 0.85rem;">
                         No chat history yet
@@ -104,6 +164,17 @@
         </main>
     </div>
 
+    <div class="chat-confirm-modal d-none" id="deleteChatModal" role="dialog" aria-modal="true" aria-labelledby="deleteChatTitle">
+        <div class="chat-confirm-card">
+            <h3 id="deleteChatTitle">Delete this chat?</h3>
+            <p>This action cannot be undone.</p>
+            <div class="chat-confirm-actions">
+                <button type="button" class="chat-confirm-cancel" id="cancelDeleteChat">Cancel</button>
+                <button type="button" class="chat-confirm-delete" id="confirmDeleteChat">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Auto-scroll to bottom
         const chatMessages = document.getElementById('chatMessages');
@@ -127,9 +198,262 @@
         if (searchInput) {
             searchInput.addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
-                document.querySelectorAll('.chat-history-item').forEach(item => {
-                    item.style.display = item.textContent.toLowerCase().includes(query) ? '' : 'none';
+                document.querySelectorAll('.chat-history-row').forEach(row => {
+                    row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
                 });
+            });
+        }
+
+        const actionError = document.getElementById('chatActionError');
+        const deleteModal = document.getElementById('deleteChatModal');
+        const cancelDeleteChat = document.getElementById('cancelDeleteChat');
+        const confirmDeleteChat = document.getElementById('confirmDeleteChat');
+        const currentSessionId = '<%= typeof currentSession !== "undefined" && currentSession ? currentSession : "" %>';
+        let pendingDeleteRow = null;
+
+        function showChatError(message) {
+            if (!actionError) return;
+            actionError.textContent = message;
+            actionError.classList.remove('d-none');
+        }
+
+        function clearChatError() {
+            if (!actionError) return;
+            actionError.textContent = '';
+            actionError.classList.add('d-none');
+        }
+
+        function closeChatMenus() {
+            document.querySelectorAll('.chat-options-menu').forEach(menu => menu.classList.add('d-none'));
+            document.querySelectorAll('.chat-options-btn').forEach(btn => btn.setAttribute('aria-expanded', 'false'));
+        }
+
+        function getOrCreateSection(name, label) {
+            let section = document.querySelector(`.chat-section[data-section="${name}"]`);
+            if (section) return section;
+
+            const chatList = document.querySelector('.chat-list');
+            section = document.createElement('div');
+            section.className = 'chat-section';
+            section.dataset.section = name;
+
+            const sectionLabel = document.createElement('div');
+            sectionLabel.className = 'chat-section-label';
+            sectionLabel.textContent = label;
+
+            if (name === 'pinned') {
+                chatList.insertBefore(sectionLabel, chatList.firstElementChild?.nextSibling || chatList.firstElementChild);
+                sectionLabel.insertAdjacentElement('afterend', section);
+            } else {
+                chatList.appendChild(sectionLabel);
+                chatList.appendChild(section);
+            }
+
+            return section;
+        }
+
+        function insertRowByCreated(section, row) {
+            const rowCreated = Number(row.dataset.createdAt || 0);
+            const nextRow = Array.from(section.querySelectorAll('.chat-history-row')).find(existingRow => {
+                return Number(existingRow.dataset.createdAt || 0) < rowCreated;
+            });
+
+            if (nextRow) {
+                section.insertBefore(row, nextRow);
+            } else {
+                section.appendChild(row);
+            }
+        }
+
+        async function chatAction(url, options) {
+            const response = await fetch(url, {
+                headers: { 'Content-Type': 'application/json' },
+                ...options
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.error || 'Chat action failed.');
+            }
+            return data;
+        }
+
+        document.querySelectorAll('.chat-options-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const menu = button.nextElementSibling;
+                const wasOpen = !menu.classList.contains('d-none');
+                closeChatMenus();
+                if (!wasOpen) {
+                    menu.classList.remove('d-none');
+                    button.setAttribute('aria-expanded', 'true');
+                }
+            });
+        });
+
+        document.addEventListener('click', closeChatMenus);
+
+        document.querySelectorAll('.rename-chat-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearChatError();
+                closeChatMenus();
+
+                const row = button.closest('.chat-history-row');
+                const link = row.querySelector('.chat-history-item');
+                const form = row.querySelector('.chat-rename-form');
+                const input = row.querySelector('.chat-rename-input');
+
+                input.value = row.dataset.title || 'Untitled Chat';
+                link.classList.add('d-none');
+                form.classList.remove('d-none');
+                input.focus();
+                input.select();
+            });
+        });
+
+        document.querySelectorAll('.rename-cancel-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const row = button.closest('.chat-history-row');
+                row.querySelector('.chat-rename-form').classList.add('d-none');
+                row.querySelector('.chat-history-item').classList.remove('d-none');
+            });
+        });
+
+        document.querySelectorAll('.chat-rename-input').forEach(input => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    const row = input.closest('.chat-history-row');
+                    row.querySelector('.chat-rename-form').classList.add('d-none');
+                    row.querySelector('.chat-history-item').classList.remove('d-none');
+                }
+            });
+        });
+
+        document.querySelectorAll('.chat-rename-form').forEach(formEl => {
+            formEl.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                clearChatError();
+
+                const row = formEl.closest('.chat-history-row');
+                const input = row.querySelector('.chat-rename-input');
+                const title = input.value.trim();
+
+                if (!title) {
+                    showChatError('Chat title cannot be empty.');
+                    input.focus();
+                    return;
+                }
+
+                if (title.length > 60) {
+                    showChatError('Chat title must be 60 characters or fewer.');
+                    input.focus();
+                    return;
+                }
+
+                try {
+                    const data = await chatAction(`/chat/${row.dataset.sessionId}/rename`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ title })
+                    });
+
+                    row.dataset.title = data.title;
+                    row.querySelector('.chat-title-text').textContent = data.title;
+                    input.value = data.title;
+                    formEl.classList.add('d-none');
+                    row.querySelector('.chat-history-item').classList.remove('d-none');
+                } catch (error) {
+                    showChatError(error.message);
+                }
+            });
+        });
+
+        document.querySelectorAll('.pin-chat-btn').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearChatError();
+                closeChatMenus();
+
+                const row = button.closest('.chat-history-row');
+                const shouldPin = row.dataset.pinned !== 'true';
+
+                try {
+                    await chatAction(`/chat/${row.dataset.sessionId}/pin`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ is_pinned: shouldPin })
+                    });
+
+                    row.dataset.pinned = shouldPin ? 'true' : 'false';
+                    row.querySelector('.pin-indicator').classList.toggle('d-none', !shouldPin);
+                    button.textContent = shouldPin ? 'Unpin' : 'Pin';
+                    button.setAttribute('aria-label', shouldPin ? 'Unpin chat' : 'Pin chat');
+
+                    const targetSection = shouldPin
+                        ? getOrCreateSection('pinned', 'Pinned')
+                        : getOrCreateSection('regular', 'Chats');
+                    insertRowByCreated(targetSection, row);
+                } catch (error) {
+                    showChatError(error.message);
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-chat-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearChatError();
+                closeChatMenus();
+                pendingDeleteRow = button.closest('.chat-history-row');
+                deleteModal.classList.remove('d-none');
+                confirmDeleteChat.focus();
+            });
+        });
+
+        if (cancelDeleteChat) {
+            cancelDeleteChat.addEventListener('click', () => {
+                pendingDeleteRow = null;
+                deleteModal.classList.add('d-none');
+            });
+        }
+
+        if (deleteModal) {
+            deleteModal.addEventListener('click', (e) => {
+                if (e.target === deleteModal) {
+                    pendingDeleteRow = null;
+                    deleteModal.classList.add('d-none');
+                }
+            });
+        }
+
+        if (confirmDeleteChat) {
+            confirmDeleteChat.addEventListener('click', async () => {
+                if (!pendingDeleteRow) return;
+                clearChatError();
+
+                const row = pendingDeleteRow;
+                const sessionId = row.dataset.sessionId;
+                confirmDeleteChat.disabled = true;
+
+                try {
+                    const data = await chatAction(`/chat/${sessionId}`, { method: 'DELETE' });
+                    row.remove();
+                    deleteModal.classList.add('d-none');
+                    pendingDeleteRow = null;
+
+                    if (currentSessionId && currentSessionId === sessionId) {
+                        window.location.href = data.redirect || '/chat';
+                    }
+                } catch (error) {
+                    deleteModal.classList.add('d-none');
+                    showChatError(error.message);
+                } finally {
+                    confirmDeleteChat.disabled = false;
+                }
             });
         }
     </script>

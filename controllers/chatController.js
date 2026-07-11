@@ -2,11 +2,13 @@ const axios = require("axios");
 const db = require("../config/db");
 const { sanitizeInput, sanitizePrompt } = require("../middleware/validate");
 
+const sessionsSelect = "SELECT id, title, is_pinned, created_at FROM chat_sessions WHERE user_id = ? ORDER BY is_pinned DESC, created_at DESC";
+
 exports.showChat = (req, res) => {
     const userId = req.session.userId;
 
     // Get user's chat sessions for sidebar
-    const sql = "SELECT id, title, created_at FROM chat_sessions WHERE user_id = ? ORDER BY created_at DESC";
+    const sql = sessionsSelect;
     db.query(sql, [userId], (err, sessions) => {
         if (err) {
             console.log(err);
@@ -75,7 +77,7 @@ exports.askQuestion = async (req, res) => {
 
         // Get sessions for sidebar
         const [sessions] = await db.promise().query(
-            "SELECT id, title, created_at FROM chat_sessions WHERE user_id = ? ORDER BY created_at DESC",
+            sessionsSelect,
             [userId]
         );
 
@@ -93,7 +95,7 @@ exports.askQuestion = async (req, res) => {
 
         // Get sessions for sidebar even on error
         const [sessions] = await db.promise().query(
-            "SELECT id, title, created_at FROM chat_sessions WHERE user_id = ? ORDER BY created_at DESC",
+            sessionsSelect,
             [userId]
         ).catch(() => [[]]);
 
@@ -114,7 +116,7 @@ exports.newSession = (req, res) => {
 
 exports.getHistory = (req, res) => {
     const userId = req.session.userId;
-    const sql = "SELECT id, title, created_at FROM chat_sessions WHERE user_id = ? ORDER BY created_at DESC";
+    const sql = sessionsSelect;
 
     db.query(sql, [userId], (err, sessions) => {
         if (err) {
@@ -141,7 +143,7 @@ exports.getSession = (req, res) => {
             if (err) messages = [];
 
             // Get sessions for sidebar
-            const sessionsSql = "SELECT id, title, created_at FROM chat_sessions WHERE user_id = ? ORDER BY created_at DESC";
+            const sessionsSql = sessionsSelect;
             db.query(sessionsSql, [userId], (err, sessions) => {
                 if (err) sessions = [];
 
@@ -156,4 +158,88 @@ exports.getSession = (req, res) => {
             });
         });
     });
+};
+
+exports.renameSession = async (req, res) => {
+    const userId = req.session.userId;
+    const sessionId = parseInt(req.params.id);
+    const title = sanitizeInput(req.body.title || "").trim();
+
+    if (!sessionId || !title) {
+        return res.status(400).json({ error: "Chat title is required." });
+    }
+
+    if (title.length > 60) {
+        return res.status(400).json({ error: "Chat title must be 60 characters or fewer." });
+    }
+
+    try {
+        const [result] = await db.promise().query(
+            "UPDATE chat_sessions SET title = ? WHERE id = ? AND user_id = ?",
+            [title, sessionId, userId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Chat not found." });
+        }
+
+        res.json({ success: true, title });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: "Failed to rename chat." });
+    }
+};
+
+exports.pinSession = async (req, res) => {
+    const userId = req.session.userId;
+    const sessionId = parseInt(req.params.id);
+    const isPinned = req.body.is_pinned === true || req.body.is_pinned === "true" || req.body.is_pinned === 1 || req.body.is_pinned === "1";
+
+    if (!sessionId) {
+        return res.status(400).json({ error: "Invalid chat session." });
+    }
+
+    try {
+        const [result] = await db.promise().query(
+            "UPDATE chat_sessions SET is_pinned = ? WHERE id = ? AND user_id = ?",
+            [isPinned ? 1 : 0, sessionId, userId]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Chat not found." });
+        }
+
+        res.json({ success: true, is_pinned: isPinned });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: "Failed to update pinned state." });
+    }
+};
+
+exports.deleteSession = async (req, res) => {
+    const userId = req.session.userId;
+    const sessionId = parseInt(req.params.id);
+
+    if (!sessionId) {
+        return res.status(400).json({ error: "Invalid chat session." });
+    }
+
+    try {
+        const [sessions] = await db.promise().query(
+            "SELECT id FROM chat_sessions WHERE id = ? AND user_id = ?",
+            [sessionId, userId]
+        );
+
+        if (sessions.length === 0) {
+            return res.status(404).json({ error: "Chat not found." });
+        }
+
+        await db.promise().query("DELETE FROM chat_messages WHERE session_id = ?", [sessionId]);
+        await db.promise().query("DELETE FROM chat_sessions WHERE id = ? AND user_id = ?", [sessionId, userId]);
+
+        res.json({ success: true, redirect: "/chat" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ error: "Failed to delete chat." });
+    }
 };

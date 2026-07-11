@@ -8,17 +8,135 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .timer-bar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: white;
-            border-bottom: 1px solid #dee2e6;
-            padding: 10px 0;
+            background: linear-gradient(135deg, #17192b 0%, #1d2340 100%);
+            border: 1px solid rgba(124, 108, 255, 0.28);
+            border-radius: 16px;
+            box-shadow: 0 14px 32px rgba(8, 10, 24, 0.24);
+            color: #FFFFFF;
+            padding: 18px 20px;
+            overflow: hidden;
         }
-        .timer-warning { color: #dc3545; font-weight: bold; }
+        .quiz-status-panel {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 220px;
+            gap: 20px;
+            align-items: center;
+        }
+        .quiz-title {
+            color: #FFFFFF;
+            font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+            font-weight: 700;
+            letter-spacing: 0;
+            line-height: 1.2;
+        }
+        .quiz-meta {
+            color: #c6c9e6;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+        .progress-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .progress-label {
+            color: #c6c9e6;
+            flex: 0 0 auto;
+            font-size: 0.82rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .timer-bar .progress {
+            background-color: rgba(198, 201, 230, 0.15);
+            border-radius: 999px;
+            flex: 1 1 auto;
+            height: 8px;
+            overflow: hidden;
+        }
+        .timer-bar .progress-bar {
+            background: linear-gradient(90deg, #7c6cff, #6d82ff);
+            border-radius: inherit;
+            box-shadow: 0 0 14px rgba(124, 108, 255, 0.28);
+        }
+        .timer-card {
+            background: #1d2340;
+            border: 1px solid rgba(124, 108, 255, 0.5);
+            border-radius: 14px;
+            box-shadow: 0 0 24px rgba(124, 108, 255, 0.16);
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .timer-icon {
+            align-items: center;
+            border: 1px solid rgba(198, 201, 230, 0.35);
+            border-radius: 50%;
+            color: #c6c9e6;
+            display: inline-flex;
+            font-size: 0.95rem;
+            height: 30px;
+            justify-content: center;
+            margin-bottom: 6px;
+            width: 30px;
+        }
+        .timer-heading {
+            color: #c6c9e6;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+        #timer {
+            color: #FFFFFF;
+            font-weight: 800;
+        }
+        #timerDisplay {
+            display: block;
+            font-size: clamp(1.8rem, 4vw, 2.35rem);
+            line-height: 1;
+        }
+        .timer-warning { color: #ffffff; font-weight: 800; }
         .question-card { transition: border-color 0.2s; }
         .question-card.answered { border-left: 4px solid #198754; }
-        .progress-tracker { font-size: 0.9rem; }
+        .progress-tracker {
+            color: #c6c9e6;
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+        @media (max-width: 992px) {
+            .quiz-status-panel {
+                grid-template-columns: minmax(0, 1fr) 190px;
+                gap: 16px;
+            }
+            .timer-card {
+                padding: 12px 14px;
+            }
+            #timerDisplay {
+                font-size: 1.9rem;
+            }
+        }
+        @media (max-width: 768px) {
+            .timer-bar {
+                padding: 16px;
+            }
+            .quiz-status-panel {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .progress-row {
+                gap: 10px;
+                margin-top: 14px;
+            }
+            .progress-label {
+                align-self: flex-end;
+            }
+            .timer-card {
+                justify-self: stretch;
+                padding: 12px 14px;
+            }
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -27,23 +145,28 @@
     <div class="container py-4 flex-grow-1">
         <!-- Timer & Progress Bar -->
         <div class="timer-bar mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-0"><%= quiz.title %></h4>
-                    <small class="text-muted">
-                        <%= quiz.question_count %> questions |
+            <div class="quiz-status-panel">
+                <div class="quiz-info">
+                    <h4 class="quiz-title mb-0"><%= quiz.title %></h4>
+                    <div class="quiz-meta">
+                        <%= quiz.question_count %> Questions |
                         <%= quiz.quiz_type.toUpperCase() %>
-                    </small>
+                    </div>
+                    <div class="progress-row">
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                        <span class="progress-label">Progress</span>
+                    </div>
                 </div>
-                <div class="text-end">
-                    <div class="fs-4" id="timer">
-                        ⏱️ <span id="timerDisplay"><%= typeof timerMinutes !== 'undefined' ? timerMinutes : 10 %>:00</span>
+                <div class="timer-card">
+                    <div class="timer-icon" aria-hidden="true">&#9201;</div>
+                    <div class="timer-heading">TIME REMAINING</div>
+                    <div id="timer">
+                        <span id="timerDisplay"><%= typeof timerMinutes !== 'undefined' ? timerMinutes : 10 %>:00</span>
                     </div>
                     <small class="progress-tracker" id="progressText">0 / <%= quiz.questions.length %> answered</small>
                 </div>
-            </div>
-            <div class="progress mt-2" style="height: 6px;">
-                <div class="progress-bar bg-success" id="progressBar" style="width: 0%"></div>
             </div>
         </div>
 

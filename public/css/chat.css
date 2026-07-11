@@ -69,28 +69,249 @@ body {
     flex: 1;
 }
 
+.chat-section-label {
+    color: #9ca3af;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin: 12px 4px 6px;
+    text-transform: uppercase;
+}
+
+.chat-history-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+}
+
+.chat-history-row:hover,
+.chat-history-row:focus-within,
+.chat-history-row.selected {
+    background: #343541;
+}
+
 .chat-history-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
     padding: 10px 12px;
     border-radius: 8px;
     cursor: pointer;
-    margin-bottom: 4px;
     color: white;
     text-decoration: none;
     font-size: 0.85rem;
+}
+
+.chat-title-text {
+    display: block;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .chat-history-item:hover {
-    background: #343541;
     color: white;
 }
 
 .chat-history-item.active {
+    color: white;
+}
+
+.pin-indicator {
+    color: #c8c3ff;
+    flex: 0 0 auto;
+    font-size: 0.78rem;
+}
+
+.chat-options {
+    flex: 0 0 auto;
+    position: relative;
+    padding-right: 4px;
+}
+
+.chat-options-btn {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #c9c9d3;
+    cursor: pointer;
+    display: flex;
+    height: 28px;
+    justify-content: center;
+    line-height: 1;
+    opacity: 0;
+    width: 28px;
+}
+
+.chat-history-row:hover .chat-options-btn,
+.chat-history-row:focus-within .chat-options-btn,
+.chat-history-row.selected .chat-options-btn {
+    opacity: 1;
+}
+
+.chat-options-btn:hover,
+.chat-options-btn:focus {
     background: #444654;
     color: white;
+    outline: none;
+}
+
+.chat-options-menu {
+    background: #25262d;
+    border: 1px solid #444654;
+    border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    min-width: 132px;
+    padding: 5px;
+    position: absolute;
+    right: 0;
+    top: 32px;
+    z-index: 20;
+}
+
+.chat-options-menu button {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: #f3f4f6;
+    cursor: pointer;
+    display: block;
+    font-size: 0.82rem;
+    padding: 8px 10px;
+    text-align: left;
+    width: 100%;
+}
+
+.chat-options-menu button:hover,
+.chat-options-menu button:focus {
+    background: #343541;
+    outline: none;
+}
+
+.chat-options-menu .delete-chat-btn {
+    color: #f1a4a4;
+}
+
+.chat-rename-form {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    min-width: 0;
+}
+
+.chat-rename-input {
+    background: #343541;
+    border: 1px solid #565869;
+    border-radius: 6px;
+    color: white;
+    flex: 1;
+    font-size: 0.82rem;
+    min-width: 0;
+    padding: 8px;
+}
+
+.chat-rename-input:focus {
+    border-color: #7c6cff;
+    outline: none;
+}
+
+.chat-rename-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.chat-rename-actions button {
+    background: #444654;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.74rem;
+    padding: 6px 7px;
+}
+
+.chat-rename-actions button:hover,
+.chat-rename-actions button:focus {
+    background: #565869;
+    outline: none;
+}
+
+.chat-error {
+    background: rgba(185, 28, 28, 0.18);
+    border: 1px solid rgba(248, 113, 113, 0.35);
+    border-radius: 8px;
+    color: #fecaca;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+}
+
+.chat-confirm-modal {
+    align-items: center;
+    background: rgba(0, 0, 0, 0.58);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    z-index: 1000;
+}
+
+.chat-confirm-card {
+    background: #25262d;
+    border: 1px solid #444654;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    color: white;
+    max-width: 360px;
+    padding: 22px;
+    width: 100%;
+}
+
+.chat-confirm-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.chat-confirm-card p {
+    color: #c9c9d3;
+    font-size: 0.9rem;
+    margin-bottom: 18px;
+}
+
+.chat-confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.chat-confirm-actions button {
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 9px 12px;
+}
+
+.chat-confirm-cancel {
+    background: #343541;
+    color: white;
+}
+
+.chat-confirm-delete {
+    background: #8f2d2d;
+    color: white;
+}
+
+.chat-confirm-delete:disabled {
+    opacity: 0.7;
 }
 
 .sidebar-footer {
