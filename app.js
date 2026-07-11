@@ -21,7 +21,6 @@ const n8nRoutes = require("./routes/n8nRoutes");
 
 // Middleware
 const { requireAuth, requireAdmin } = require("./middleware/auth");
-const upload = require("./middleware/upload");
 
 // View engine
 app.set("view engine", "ejs");
@@ -112,8 +111,11 @@ app.post("/flashcards/:id/delete", requireAuth, summaryController.deleteFlashcar
 // Calendar & Sync
 app.get("/calendar", requireAuth, calendarController.showCalendar);
 app.get("/calendar/events", requireAuth, calendarController.getEvents);
+app.get("/calendar/analytics", requireAuth, calendarController.getStudyAnalytics);
 app.post("/calendar/sessions", requireAuth, calendarController.createStudySession);
+app.post("/calendar/sessions/:id/update", requireAuth, calendarController.updateStudySession);
 app.post("/calendar/sessions/:id/delete", requireAuth, calendarController.deleteStudySession);
+app.post("/calendar/pomodoro", requireAuth, calendarController.logPomodoroSession);
 app.post("/calendar/ai", requireAuth, calendarController.handleCalendarAI);
 app.get("/auth/google", requireAuth, calendarController.authGoogle);
 app.get("/auth/google/callback", requireAuth, calendarController.authGoogleCallback);
@@ -127,8 +129,6 @@ app.post("/calendar/disconnect/:provider", requireAuth, calendarController.disco
 app.get("/admin", requireAuth, requireAdmin, adminController.showDashboard);
 app.get("/admin/users", requireAuth, requireAdmin, adminController.manageUsers);
 app.post("/admin/users/:id/delete", requireAuth, requireAdmin, adminController.deleteUser);
-app.get("/admin/documents", requireAuth, requireAdmin, adminController.manageDocuments);
-app.post("/admin/documents/:id/delete", requireAuth, requireAdmin, adminController.deleteDocument);
 app.get("/admin/analytics", requireAuth, requireAdmin, adminController.viewAnalytics);
 
 // =====================
