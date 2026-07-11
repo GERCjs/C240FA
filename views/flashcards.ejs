@@ -61,10 +61,10 @@
                                         </div>
                                         <div class="flashcard-back d-none">
                                             <p><%= card.back_text %></p>
-                                            <small class="text-muted">Reviewed <%= card.times_reviewed %> time(s)</small>
-                                            <form action="/flashcards/<%= card.id %>/review" method="POST" class="mt-2" onclick="event.stopPropagation()">
-                                                <button class="btn btn-sm btn-success">✓ Mark Reviewed</button>
-                                            </form>
+                                            <small class="text-muted review-count" data-card-id="<%= card.id %>">Reviewed <%= card.times_reviewed %> time(s)</small>
+                                            <div class="mt-2" onclick="event.stopPropagation()">
+                                                <button class="btn btn-sm btn-success" onclick="markReviewed(<%= card.id %>, this)">✓ Mark Reviewed</button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -133,6 +133,29 @@
             const back = card.querySelector('.flashcard-back');
             front.classList.toggle('d-none');
             back.classList.toggle('d-none');
+        }
+
+        // Mark reviewed - sends POST and updates count in UI
+        function markReviewed(cardId, btn) {
+            fetch(`/flashcards/${cardId}/review`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const countEl = document.querySelector(`.review-count[data-card-id="${cardId}"]`);
+                        if (countEl) {
+                            const current = parseInt(countEl.textContent.match(/\d+/) || 0);
+                            countEl.textContent = `Reviewed ${current + 1} time(s)`;
+                        }
+                        btn.textContent = '✓ Reviewed!';
+                        btn.classList.remove('btn-success');
+                        btn.classList.add('btn-outline-success');
+                        setTimeout(() => {
+                            btn.textContent = '✓ Mark Reviewed';
+                            btn.classList.remove('btn-outline-success');
+                            btn.classList.add('btn-success');
+                        }, 1500);
+                    }
+                });
         }
 
         // Topic filter
