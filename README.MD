@@ -7,7 +7,7 @@ An AI-powered study assistant for polytechnic students built with Retrieval-Augm
 ## System Architecture
 
 ```
-Student → Express.js + EJS Frontend → Axios POST → Flask RAG API → ChromaDB Vector Search → Ollama qwen3:8b → AI Response → MySQL Chat History
+Student → Express.js + EJS Frontend → Axios POST → Flask RAG API → ChromaDB Vector Search → DeepSeek V4 Flash → AI Response → MySQL Chat History
 ```
 
 ## Technology Stack
@@ -18,7 +18,7 @@ Student → Express.js + EJS Frontend → Axios POST → Flask RAG API → Chrom
 | Backend | Node.js, Express.js |
 | Database | MySQL |
 | AI/RAG | Python, Flask, ChromaDB, Sentence Transformers |
-| LLM | Ollama (qwen3:8b) |
+| LLM | DeepSeek V4 Flash |
 | Auth | bcrypt, express-session |
 
 ## Features
@@ -43,7 +43,7 @@ Student → Express.js + EJS Frontend → Axios POST → Flask RAG API → Chrom
 
 ### Quiz Generator
 - Generate MCQs and short-answer questions from study topics
-- AI-powered question generation via Ollama
+- AI-powered question generation via DeepSeek V4 Flash
 - Auto-grading with explanations
 - Score tracking and history
 
@@ -117,7 +117,7 @@ C240FA/
 │   ├── chunking.py           # Document loader
 │   ├── embedding.py          # Sentence transformer embeddings
 │   ├── retrieval.py          # ChromaDB vector search
-│   ├── generator.py          # Ollama LLM integration
+│   ├── generator.py          # DeepSeek V4 Flash LLM integration
 │   ├── rag_pipeline.py       # CLI testing
 │   └── requirements.txt
 ├── knowledge_base/
@@ -168,19 +168,28 @@ npm install
 pip install flask flask-cors sentence-transformers chromadb openai
 ```
 
-### 3. Install Ollama + Model
-
-```bash
-# Download from https://ollama.com/download
-ollama pull qwen3:8b
-```
-
-### 4. Configure Environment
+### 3. Configure Environment
 
 ```bash
 copy .env.example .env
 # Edit .env with your MySQL credentials
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=YOUR_PASSWORD
+DB_NAME=c240_ai
+
+OpenRouter Configuration
+DeepSeek API
+OPENROUTER_API_KEY=YOUR_API_KEY
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=deepseek/deepseek-v4-flash
 ```
+
+
+DeepSeek API
+OPENROUTER_API_KEY=YOUR_API_KEY
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+OPENROUTER_MODEL=deepseek/deepseek-v4-flash
 
 ### 5. Setup Database
 
