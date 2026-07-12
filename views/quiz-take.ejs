@@ -8,11 +8,11 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .timer-bar {
-            background: linear-gradient(135deg, #17192b 0%, #1d2340 100%);
-            border: 1px solid rgba(124, 108, 255, 0.28);
+            background: #FFFFFF;
+            border: 1px solid #D8E9FF;
             border-radius: 16px;
-            box-shadow: 0 14px 32px rgba(8, 10, 24, 0.24);
-            color: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(60, 100, 180, 0.08);
+            color: #1F2937;
             padding: 18px 20px;
             overflow: hidden;
         }
@@ -23,14 +23,14 @@
             align-items: center;
         }
         .quiz-title {
-            color: #FFFFFF;
+            color: #1F2937;
             font-size: clamp(1.35rem, 2.2vw, 1.8rem);
             font-weight: 700;
             letter-spacing: 0;
             line-height: 1.2;
         }
         .quiz-meta {
-            color: #c6c9e6;
+            color: #64748B;
             font-size: 0.9rem;
             margin-top: 4px;
         }
@@ -41,37 +41,38 @@
             margin-top: 16px;
         }
         .progress-label {
-            color: #c6c9e6;
+            color: #64748B;
             flex: 0 0 auto;
             font-size: 0.82rem;
             font-weight: 600;
             white-space: nowrap;
         }
         .timer-bar .progress {
-            background-color: rgba(198, 201, 230, 0.15);
+            background-color: #EAF4FF;
             border-radius: 999px;
             flex: 1 1 auto;
             height: 8px;
             overflow: hidden;
         }
         .timer-bar .progress-bar {
-            background: linear-gradient(90deg, #7c6cff, #6d82ff);
+            background: linear-gradient(90deg, #4A90FF, #6CB8FF);
             border-radius: inherit;
-            box-shadow: 0 0 14px rgba(124, 108, 255, 0.28);
+            box-shadow: 0 0 14px rgba(74, 144, 255, 0.28);
         }
         .timer-card {
-            background: #1d2340;
-            border: 1px solid rgba(124, 108, 255, 0.5);
+            background: #FFFFFF;
+            border: 1px solid #B8D8FF;
             border-radius: 14px;
-            box-shadow: 0 0 24px rgba(124, 108, 255, 0.16);
+            box-shadow: 0 8px 24px rgba(60, 100, 180, 0.08);
             padding: 14px 16px;
             text-align: center;
         }
         .timer-icon {
             align-items: center;
-            border: 1px solid rgba(198, 201, 230, 0.35);
+            background: #EAF4FF;
+            border: 1px solid #D8E9FF;
             border-radius: 50%;
-            color: #c6c9e6;
+            color: #4A90FF;
             display: inline-flex;
             font-size: 0.95rem;
             height: 30px;
@@ -80,14 +81,14 @@
             width: 30px;
         }
         .timer-heading {
-            color: #c6c9e6;
+            color: #64748B;
             font-size: 0.68rem;
             font-weight: 800;
             letter-spacing: 0.08em;
             margin-bottom: 4px;
         }
         #timer {
-            color: #FFFFFF;
+            color: #1F2937;
             font-weight: 800;
         }
         #timerDisplay {
@@ -95,11 +96,14 @@
             font-size: clamp(1.8rem, 4vw, 2.35rem);
             line-height: 1;
         }
-        .timer-warning { color: #ffffff; font-weight: 800; }
-        .question-card { transition: border-color 0.2s; }
-        .question-card.answered { border-left: 4px solid #198754; }
+        .timer-warning { color: #EF5350; font-weight: 800; }
+        .question-card {
+            padding: 0.35rem;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        .question-card.answered { border-left: 4px solid #43C47A; }
         .progress-tracker {
-            color: #c6c9e6;
+            color: #64748B;
             display: block;
             font-size: 0.82rem;
             font-weight: 600;
